@@ -21,33 +21,19 @@ export const menuItems = [
   { id: "about", text: "About", href: "/about", svg: "about", target: "_self" }, // About page
   {
     id: "blog",
-    text: "Blogs",
+    text: "Articles",
     href: "/blog",
     svg: "blog",
     target: "_self",
     subItems: [
       {
         id: "all",
-        text: "All blogs",
-        href: "/blog",
+        text: "Life",
+        href: "/blog/life",
         svg: "post",
         target: "_self",
-      }, // All blog
-      {
-        id: "tech",
-        text: "Tech blogs",
-        href: "/blog/categories/tech",
-        svg: "cube",
-        target: "_self",
-      }, // Technology category
-      {
-        id: "life",
-        text: "Life blogs",
-        href: "/blog/categories/life",
-        svg: "heart",
-        target: "_self",
-      }, // Life category
-    ],
+      }
+    ]
   }, // Blog page with sub-items
   {
     id: "project",
@@ -74,12 +60,6 @@ export const menuItems = [
 
 // Social media and contact icons
 export const socialIcons = [
-  {
-    href: "https://afdian.net/a/saroprock",
-    ariaLabel: "Support my work",
-    title: "Support my work",
-    svg: "support",
-  },
   {
     href: "https://github.com/xguagua",
     ariaLabel: "Github",
