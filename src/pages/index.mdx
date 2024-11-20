@@ -10,16 +10,17 @@ import Warning from "../components/blog/warning.astro";
 import TimeLine from "../components/page/TimeLine.astro";
 import LinkCard from "../components/page/LinkCard.astro";
 
+<script type = "text/javascript" src = "/music.js" ></script>
 <BaseLayout title="Home">
   <BaseCard title="Home">
     <div class="flex">
       <div class="p-6">
           ![](https://api.xecades.xyz/api?codeforces=HRL114514&img=2&bg=255%2C255%2C255%2C1&bilibili=xguagua_233&github=xguagua&wechat=Leo&qq=xguagua_233&email=bilixguagua%40outlook.com&luogu=HRL114514)
 
-          # xguagua 的小站
+            # xguagua 的小站
+            一只普通流萤厨，就读于 CFLS，更详细的简介参阅 About 栏目。
 
-          一只普通流萤厨，就读于 CFLS，更详细的简介参阅 About 栏目。
-          ## 施工中
+            **施工中**
       </div>
     </div>
 
@@ -27,7 +28,7 @@ import LinkCard from "../components/page/LinkCard.astro";
 
   <BaseCard title="Home" image = "/index.webp">
   <div style = "text-align: center;">
-    <button onclick = "javascript:alert('还在写qwq')" style = "float: left;font-size: 47px;font-family: KaiTi;">每日歌单</button>
+    <button id = "btn" onclick = "logic()" style = "float: left;font-size: 47px;font-family: KaiTi;">每日歌单</button>
   </div>
   </BaseCard>
 </BaseLayout>
