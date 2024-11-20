@@ -25,15 +25,6 @@ export const menuItems = [
     href: "/blog",
     svg: "blog",
     target: "_self",
-    subItems: [
-      {
-        id: "all",
-        text: "Life",
-        href: "/blog/life",
-        svg: "post",
-        target: "_self",
-      }
-    ]
   }, // Blog page with sub-items
   {
     id: "project",
@@ -73,9 +64,9 @@ export const socialIcons = [
     svg: "bilibili",
   },
   {
-    href: "/rss.xml",
-    ariaLabel: "RSS Feed",
-    title: "RSS Feed",
+    href: "https://www.luogu.com.cn/user/905636",
+    ariaLabel: "Luogu",
+    title: "Luogu",
     svg: "rss",
   },
 ];
