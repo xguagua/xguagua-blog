@@ -1,0 +1,72 @@
+---
+title: ST表学习笔记
+description: ST表
+pubDate: 2024-11-26
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+---
+
+
+
+## 0.定义 & 基本思想
+
+ST 表是用来处理**可重复贡献问题**的，即 $x opt x = x$，且 $opt$ 须有结合律（但是这玩意一般运算都有）
+
+所以，ST 表可以来解决区间 MIN/MAX/GCD/LCM... 等问题。
+
+基于倍增与 DP 思想，可以做到 $\Theta(n \log n)$ 预处理，$\Theta(1)$ 查询，所以有些时候优于线段树，但是不支持修改。
+
+<p style = "color: #ff4444;">但是，ST 表不支持修改</p>
+
+~~修改请移步至线段树~~
+
+## 1.实现
+
+设 $st _ {i,j}$ 为区间 $[i,i + 2 ^ j - 1]$ 的需要维护的值
+
+~~依言顶针~~可得，$st _ {i,0} = a _ i$。
+
+由定义式得，$st _ {i,j} = opt(st _ {i,j - 1},st _ {i + 2 ^ {j - 1},j - 1})$
+
+至此，预处理完毕。
+
+对于一个查询，可以分为两个部分：$[l,l + 2 ^ {len} - 1],[r - 2 ^ {len} + 1,r]$
+
+所以，答案即为 $opt(st _ {l,len}, st _ {r - 2 ^ {len} + 1,len})$。
+
+常数较小，并且比线段树简单的多，所以没有修改操作就可以写 ST 表不支持修改
+
+记得预处理 $\log _ 2$ 的值，不然有可能被卡掉。
+
+~~24.11.16 的考试一视同仁，两个一起卡~~
+
+## 2.代码模板
+
+以区间最小值举例：
+
+```cpp
+constexpr int MAXN = ...,MXLG = (自己开计算器算一下);
+int a[MAXN],st[MAXN][MXLG],lg[MAXN];
+lg[0] = -1; //准备预处 log _ 2 的值
+for(int i = 1;i <= n;i++)
+{
+    lg[i] = lg[i >> 1] + 1;
+    st[i][0] = a[i];
+}
+for(int j = 1;j <= lg[n];j++)
+{
+    for(int i = 1;i + (1 << j) - 1 <= n;i++)
+    {
+        st[i][j] = min(st[i][j - 1],st[i + (1 << (j - 1))][j - 1]);
+    }
+}
+int query(int l,int r)
+{
+    //#define len lg[r - l + 1];
+    int len = lg[r - l + 1];
+    return min(st[l][len],st[r - (1 << len) + 1][len]);
+}
+
+```
