@@ -20,7 +20,9 @@ import LinkCard from "../components/page/LinkCard.astro";
             # xguagua 的小站
             一只普通流萤厨，就读于 CFLS，更详细的简介参阅 About 栏目。
 
-            下面有一点我写的小功能 :)
+            建议使用暗色主题，当然你用亮色我也不拦着 :)
+
+            下面有一点我写的小功能awa
             
             **施工中**
       </div>
@@ -30,11 +32,16 @@ import LinkCard from "../components/page/LinkCard.astro";
 
   <BaseCard title="Home" image = "/index.webp">
   <div style = "text-align: center;">
-    <button onclick = "logic()" style = "float: left;font-size: 47px;font-family: KaiTi;">每日歌单</button>
-    <a href = "/Lists.html" style = "text-align: right;font-size: 12x;font-family: KaiTi;">当前歌曲目录（只支持随机跳歌哦）</a>
+    [如果下面有 Now Playing 等了一小会也没声音，请点这里](/blog/turtorial)
+
+    [当前歌曲目录（只支持随机跳歌哦）](/Lists.html)
     <br />
-    <a id = "status" href = "" style = "margin: 0 auto;color: #57f8ff;">Waiting For Playing...</a> 
+    <button onclick = "logic()" style = "float: left;font-size: 31px;font-family: KaiTi;background-color: #aaaaaa;">随机跳歌</button>
+    <a id = "status" href = "javascript:void(0);" style = "text-align: center;font-size: 18px;font-family: KaiTi;rgin: 0 auto;color: #57f8ff;">Waiting For Playing...</a> 
     <iframe id = "displayMain" style = "margin: 0 auto;display: none;"></iframe>
+    <br />
+    <br />
+    <button id = "stopit" onclick = "stopPlaying()" style = "display: none;float: left;font-size: 24px;font-family: KaiTi;">停止播放</button>
   </div>
   </BaseCard>
 </BaseLayout>
