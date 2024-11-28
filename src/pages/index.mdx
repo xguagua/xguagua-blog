@@ -37,11 +37,11 @@ import LinkCard from "../components/page/LinkCard.astro";
     [当前歌曲目录（只支持随机跳歌哦）](/Lists.html)
     <br />
     <button onclick = "logic()" style = "float: left;font-size: 31px;font-family: KaiTi;background-color: #aaaaaa;">随机跳歌</button>
-    <a id = "status" href = "javascript:void(0);" style = "text-align: center;font-size: 18px;font-family: KaiTi;rgin: 0 auto;color: #57f8ff;">Waiting For Playing...</a> 
-    <iframe id = "displayMain" style = "margin: 0 auto;display: none;"></iframe>
+    <p id = "status" style = "text-align: center;font-size: 18px;font-family: KaiTi;rgin: 0 auto;color: #57f8ff;">Waiting For Playing...</p> 
+    <audio autoplay="true" loop="true"  src="" id = "displayMain" style = "display: none;" />
     <br />
     <br />
     <button id = "stopit" onclick = "stopPlaying()" style = "display: none;float: left;font-size: 24px;font-family: KaiTi;">停止播放</button>
-  </div>
+  </div> 
   </BaseCard>
 </BaseLayout>

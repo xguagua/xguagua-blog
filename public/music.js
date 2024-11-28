@@ -1,10 +1,20 @@
-//https://player.bilibili.com/player.html?isOutside=true&aid=401185325&bvid=BV1Lo4y1F7Fg&cid=1129401667&p=1
-var videos = [["https://player.bilibili.com/player.html?isOutside=true&aid=94997018&bvid=BV1YE411T7aA&cid=365406930&p=1&autoplay=true","Starglow","https://www.bilibili.com/video/BV1YE411T7aA/"], //Starglow
-["https://player.bilibili.com/player.html?isOutside=true&aid=268176261&bvid=BV1tY411B7T9&cid=1045363842&p=1&autoplay=true","Lemon","https://www.bilibili.com/video/BV1tY411B7T9/"], //Lemon
-["https://player.bilibili.com/player.html?isOutside=true&aid=626125255&bvid=BV1Vt4y19749&cid=210736348&p=1&autoplay=true","崩壊世界の歌姬","https://www.bilibili.com/video/BV1Vt4y19749/"], //崩坏世界的歌姬
-["https://player.bilibili.com/player.html?isOutside=true&aid=342127974&bvid=BV1P94y1m7Y8&cid=736595556&p=1&autoplay=true","It Has to Be This Way","https://www.bilibili.com/video/BV1P94y1m7Y8/"], //It Has to Be This Way
-["https://player.bilibili.com/player.html?isOutside=true&aid=401185325&bvid=BV1Lo4y1F7Fg&cid=1129401667&p=1&autoplay=true","LOSER","https://www.bilibili.com/video/BV1Lo4y1F7Fg"]
-];
+var alist = [
+"经过",
+"千本樱",
+"神的随波逐流",
+"使一颗心免于哀伤",
+"希望有羽毛和翅膀",
+"Bad Apple",
+"Lemon",
+"Starfall",
+"Nightglow",
+"Passing Memories",
+"See You Again",
+"The Only Thing I Know For Real",
+"TruE"
+]
+
+const lim = 30;
 
 var click_times = 0,tot = 0;
 
@@ -15,9 +25,9 @@ function rnd()
 }
 function logic()
 {
-    if(click_times >= 20)
+    if(click_times >= lim)
     {
-        alert("你已经使用过了20多遍了,休息一下好不好");
+        alert("你已经使用过了" + lim.toString() + "多遍了,休息一下好不好");
         return ;
     }
     var display = document.getElementById("displayMain")
@@ -25,19 +35,18 @@ function logic()
     var stp = document.getElementById("stopit");
     var id;
     do 
-        id = rnd() % videos.length;
+        id = rnd() % alist.length;
     while(apred[id]);
     apred[id] = true;
     ++tot;
-    if(tot >= videos.length / 2)
+    if(tot >= alist.length * 3 / 4)
     {
-        apred[rnd() % videos.length] = false;
-        tot--;
+        apred[rnd() % alist.length] = false;
+        --tot;
     }
     stp.style.display = "block";
-    display.src = videos[id][0];
-    src_show.innerHTML = "Now Playing: " + videos[id][1];
-    src_show.href = videos[id][2];
+    display.src = "/audio/" + alist[id] + ".mp3";
+    src_show.innerHTML = "Now Playing: " + alist[id];
     click_times++;
 }
 
@@ -47,6 +56,5 @@ function stopPlaying()
     var stp = document.getElementById("stopit");
     display.src = "";
     src_show.innerHTML = "Waiting For Playing...";
-    src_show.href = "javascript:void(0);";
     stp.style.display = "none";
 }
