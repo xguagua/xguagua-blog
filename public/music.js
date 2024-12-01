@@ -11,7 +11,9 @@ var alist = [
 "Passing Memories",
 "See You Again",
 "The Only Thing I Know For Real",
-"TruE"
+"TruE",
+"LOSER",
+"风与约定"
 ]
 
 const lim = 30;
