@@ -1,0 +1,72 @@
+---
+title: DP总结(三，状压DP)
+description: 状压DP
+pubDate: 2024-12-6
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+---
+
+## 0.定义
+
+就是把可能的状态压进一个 `int` 里，然后直接枚举状态来转移。
+
+## 1.经典问题
+
+### TSP问题
+
+其实就是图上的最短哈密尔顿回路问题（但是这玩意是 NP-Hard 的）。
+
+设 $dp _ {i,j}$ 为状态为 $i$ 时，通过已访问过的结点到达 $j$ 的最短路径。
+
+则有转移方程：
+
+$$
+dp _ {i,j} \gets \min(dp _ {i \operatorname{xor} (1 << j),k} + dis _ {k,j})
+$$
+
+模板代码如下：
+
+```cpp
+memset(dp,0x3f,sizeof(dp));
+for(int i = 1;i <= n;i++)
+    dp[i << (i - 1)][i] = 0; //自己到自己的距离为 0
+int ans = 0x3f3f3f3f3f3f;
+for(int i = 0;i <= (1 << n);i++)
+{
+    for(int j = 1;j <= n;j++)
+    {
+        if(i & (1 << (j - 1)))
+        {
+            for(int k = 1;k <= n;k++)
+            {
+                if(i & (1 << (k - 1)) /*g[k][j] != -1*/)
+                    dp[i][j] = min(dp[i][j],dp[i ^ (1 << (j - 1))][k] + g[k][j]) ;
+            }
+        }
+    }
+    if(i == (1 << n) - 1)
+        ans = min(ans,dp[i][j]);
+}
+cout << ((ans >= inf) ? -1 : ans);
+```
+### 朴素
+
+其实和其他 DP 难的地方一样，也是怎么设状态，怎么转移。
+
+反正 DP 这个东西很神奇，多做做题就找到套路了。
+
+还是讲道[例题](https://www.luogu.com.cn/problem/P1896)吧
+
+我们设 $dp _ {i,j,k} $ 为考虑前 $i$ 行，状态为 $j$，已经放置 $k$ 个国王时的方案数。
+
+则有转移方程：
+
+$$
+dp _ {i,j,k} = \sum dp _ {i - 1,x,k - popcount(j)}
+$$
+
+然后需要判断掉非法情况，枚举状态即可。
+
+可以先把每一行的合法状态预处理出来，可以大大降低复杂度。

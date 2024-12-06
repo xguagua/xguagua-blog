@@ -13,7 +13,8 @@ var alist = [
 "The Only Thing I Know For Real",
 "TruE",
 "LOSER",
-"风与约定"
+"风与约定",
+"Shed a Light"
 ]
 
 const lim = 30;
