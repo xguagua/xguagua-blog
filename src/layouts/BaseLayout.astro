@@ -19,7 +19,29 @@ const { title, image, includeSidebar = true } = Astro.props;
 <html lang={i18next.language} class="bg-base-300" data-theme="winter">
   <head>
     <meta charset="UTF-8" />
-    <title class="sr-only">{`${title} - ${SITE_TAB}`}</title>
+    <title class="sr-only" id = "classifyTitle">{`${title} - ${SITE_TAB}`}</title>
+    <script>
+      var Origin;
+      const Timeout = 1500;
+      var elementTitle = document.getElementById("classifyTitle");
+
+      Origin = document.title;
+      function ResetTitle() {elementTitle.innerHTML = Origin;};
+      function Main()
+      {
+          if(document.visibilityState === "hidden")
+          {
+              elementTitle.innerHTML = "你要走了吗？那，再见喽？";
+              setTimeout(ResetTitle,Timeout);
+          }
+          if(document.visibilityState === "visible")
+          {
+              elementTitle.innerHTML = "欢迎回来！";
+              setTimeout(ResetTitle,Timeout);
+          }
+      };
+      document.addEventListener("visibilitychange",Main);
+    </script>
     <script is:inline>
       (function () {
         const storedTheme = localStorage.getItem("theme");

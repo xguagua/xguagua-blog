@@ -10,6 +10,7 @@ import Warning from "../components/blog/warning.astro";
 import TimeLine from "../components/page/TimeLine.astro";
 import LinkCard from "../components/page/LinkCard.astro";
 
+<script type = "text/javascript" src = "/ListSupport.js" / >
 <script type = "text/javascript" src = "/music.js" / >
 <BaseLayout title="Home">
   <BaseCard title="Home">
@@ -31,10 +32,13 @@ import LinkCard from "../components/page/LinkCard.astro";
   </BaseCard>
 
   <BaseCard title="Home" image = "/index.webp">
-  <div style = "text-align: center;">
+      <LinkCard
+      title = "当前歌曲目录"
+      url = "/Lists.html"
+      img = "/image/Firefly_1.jpg"
+      / >
     如果下面有 Now Playing 但没声音，就等一下，可能是你的文件还没同步完。
-
-    [当前歌曲目录（只支持随机跳歌哦）](/Lists.html)
+  <div style = "text-align: center;">
     <br />
     <button onclick = "logic()" style = "float: left;font-size: 31px;font-family: KaiTi;background-color: #aaaaaa;">随机跳歌</button>
     <p id = "status" style = "text-align: center;font-size: 18px;font-family: KaiTi;rgin: 0 auto;color: #57f8ff;">Waiting For Playing...</p> 

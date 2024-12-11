@@ -1,23 +1,4 @@
-var alist = [
-"经过",
-"千本樱",
-"神的随波逐流",
-"使一颗心免于哀伤",
-"希望有羽毛和翅膀",
-"Bad Apple",
-"Lemon",
-"Starfall",
-"Nightglow",
-"Passing Memories",
-"See You Again",
-"The Only Thing I Know For Real",
-"TruE",
-"LOSER",
-"风与约定",
-"Shed a Light"
-]
-
-const lim = 30;
+const lim = Math.floor(window.alist.length * 3 / 10.0) * 10;
 
 var click_times = 0,tot = 0;
 
@@ -38,18 +19,18 @@ function logic()
     var stp = document.getElementById("stopit");
     var id;
     do 
-        id = rnd() % alist.length;
+        id = rnd() % window.alist.length;
     while(apred[id]);
     apred[id] = true;
     ++tot;
-    if(tot >= alist.length * 3 / 4)
+    if(tot >= window.alist.length * 3 / 4)
     {
-        apred[rnd() % alist.length] = false;
+        apred[rnd() % window.alist.length] = false;
         --tot;
     }
     stp.style.display = "block";
-    display.src = "/audio/" + alist[id] + ".mp3";
-    src_show.innerHTML = "Now Playing: " + alist[id];
+    display.src = "/audio/" + window.alist[id] + ".mp3";
+    src_show.innerHTML = "Now Playing: " + window.alist[id];
     click_times++;
 }
 

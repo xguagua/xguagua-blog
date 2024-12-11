@@ -1,31 +1,29 @@
 <!DOCTYPE html>
+
 <html>
     <head>
         <meta charset="utf-8">
-        <title>歌曲目录awa</title>
+        <title>歌单</title>
     </head>
     <body>
-        <h1>目前有的歌曲，想让我加B站/洛谷找我 <br/>
-            <a href = ".." style = "font-family:    'Courier New', Courier, monospace;font-size: 47px;text-decoration: none;">Back</a>
-        </h1>
-        <del>当然加不加看我觉得好不好听和当时心情</del>
-        <p>
-            经过<br />
-            千本樱<br />
-            神的随波逐流<br />
-            使一颗心免于哀伤<br />
-            希望有羽毛和翅膀<br />
-            Bad Apple<br />
-            Lemon<br />
-            Starfall<br />
-            Nightglow<br />
-            Passing Memories<br />
-            See You Again<br />
-            The Only Thing I Know For Real<br />
-            TruE<br />
-            LOSER<br />
-            风与约定<br />
-            Shed a Light
-        </p>
+        <div id="ShowPart">
+        </div>
     </body>
+    <script src = "ListSupport.js"></script>
+    <script>
+        var DivElem = document.getElementById("ShowPart");
+        window.onload = function(){
+            for(var i = 0;i < window.alist.length;i++)
+            {
+                const Fa = document.createElement("span");
+                const Li = document.createElement("li");
+                const BR = document.createElement("br");
+                const Text = document.createTextNode(window.alist[i]);
+                Li.appendChild(Text);
+                Fa.appendChild(Li);
+                Fa.appendChild(BR);
+                DivElem.appendChild(Fa);
+            }
+        }
+    </script>
 </html>
