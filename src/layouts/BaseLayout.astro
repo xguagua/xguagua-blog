@@ -21,10 +21,10 @@ const { title, image, includeSidebar = true } = Astro.props;
     <meta charset="UTF-8" />
     <title class="sr-only" id = "classifyTitle">{`${title} - ${SITE_TAB}`}</title>
     <script>
-      var Origin;
+      var Origin = "";
       const Timeout = 1500;
-      var elementTitle = document.getElementById("classifyTitle");
-
+      
+      var elementTitle = document.getElementById("classifyTitle") as Element;
       Origin = document.title;
       function ResetTitle() {elementTitle.innerHTML = Origin;};
       function Main()
