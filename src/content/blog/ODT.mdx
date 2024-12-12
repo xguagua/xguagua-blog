@@ -25,7 +25,7 @@ struct Chtholly
     int l,r;
     mutable int val;
     bool operator<(const Chtholly &a) const {return l < a.l;};
-    Chtholly(int l,int r,int val):l(l),r(r),val(val){};
+    Chtholly(int l,int r = 0,int val = 0):l(l),r(r),val(val){};
 };
 set<Chtholly> odt;
 #define iter set<Chtholly>::iterator
@@ -49,6 +49,7 @@ iter split(int pos)
     if(it->r < pos)
         return odt.end();
     int l = it->l,r = it->r,val = it->val;
+    odt.erase(it);
     odt.insert(Chtholly(l,pos - 1,val));
     return odt.insert(Chtholly(pos,r,val)).first;
 }
@@ -95,7 +96,7 @@ Any perform(int l,int r,...)
 
 这个时候，就该用上扩展 ODT 了。
 
-知周所众，替罪羊树有不用旋转还能平衡的秘诀就是，只要不满意，就炸了重构...
+知周所众，替罪羊树有不用旋转还能平衡的秘诀就是，只要不平衡，就炸了重构...
 
 所以就可以结合一下 ODT 和替罪羊树，就有了保证根号复杂度的 ODT，并且 **无需区间推平**。
 

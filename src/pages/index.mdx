@@ -10,8 +10,7 @@ import Warning from "../components/blog/warning.astro";
 import TimeLine from "../components/page/TimeLine.astro";
 import LinkCard from "../components/page/LinkCard.astro";
 
-<script type = "text/javascript" src = "/ListSupport.js" / >
-<script type = "text/javascript" src = "/music.js" / >
+
 <BaseLayout title="Home">
   <BaseCard title="Home">
     <div class="flex">
@@ -38,14 +37,21 @@ import LinkCard from "../components/page/LinkCard.astro";
       img = "/image/Firefly_1.jpg"
       / >
     如果下面有 Now Playing 但没声音，就等一下，可能是你的文件还没同步完。
-  <div style = "text-align: center;">
+  <div style = "text-align: center;"> 
     <br />
     <button onclick = "logic()" style = "float: left;font-size: 31px;font-family: KaiTi;background-color: #aaaaaa;">随机跳歌</button>
     <p id = "status" style = "text-align: center;font-size: 18px;font-family: KaiTi;rgin: 0 auto;color: #57f8ff;">Waiting For Playing...</p> 
     <audio autoplay="true" loop="true"  src="" id = "displayMain" style = "display: none;" />
     <br />
     <br />
-    <button id = "stopit" onclick = "stopPlaying()" style = "display: none;float: left;font-size: 24px;font-family: KaiTi;">停止播放</button>
+    <div id = "controller" style = "display: none;">
+    <button id = "stopit" onclick = "stopPlaying()" style = "float: left;font-size: 24px;font-family: KaiTi;">停止播放</button>
+    <button id = "pauseit" onclick = "pausePlaying()" style = "float: right;">
+      <img src = "/image/Pause.svg" height = "64" width = "64" style = "pointer-events: none;background-image = url()" id = "btnImg"/>
+    </button>
+    </div>
   </div> 
   </BaseCard>
 </BaseLayout>
+<script type = "text/javascript" src = "/ListSupport.js" / >
+<script type = "text/javascript" src = "/music.js" / >

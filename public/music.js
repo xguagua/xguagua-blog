@@ -1,11 +1,21 @@
 const lim = Math.floor(window.alist.length * 3 / 10.0) * 10;
 
 var click_times = 0,tot = 0;
+var display,src_show,control,buttonImage,prevText;
+
+
+window.onload = function()
+{
+    display = document.getElementById("displayMain");
+    src_show = document.getElementById("status");
+    control = document.getElementById("controller");
+    buttonImage = document.getElementById("btnImg");
+}
 
 var apred = {};
 function rnd()
 {
-    return Math.floor(Math.random() * 114514 / 191 + 1654 * Math.E);
+    return Math.floor(Math.random() * 114514 * Math.PI / 191 + 1654 * Math.E);
 }
 function logic()
 {
@@ -14,10 +24,7 @@ function logic()
         alert("你已经使用过了" + lim.toString() + "多遍了,休息一下好不好");
         return ;
     }
-    var display = document.getElementById("displayMain")
-    var src_show = document.getElementById("status");
-    var stp = document.getElementById("stopit");
-    var id;
+    let id;
     do 
         id = rnd() % window.alist.length;
     while(apred[id]);
@@ -28,7 +35,7 @@ function logic()
         apred[rnd() % window.alist.length] = false;
         --tot;
     }
-    stp.style.display = "block";
+    control.style.display = "block";
     display.src = "/audio/" + window.alist[id] + ".mp3";
     src_show.innerHTML = "Now Playing: " + window.alist[id];
     click_times++;
@@ -36,9 +43,24 @@ function logic()
 
 function stopPlaying()
 {
-    var display = document.getElementById("displayMain"),src_show = document.getElementById("status");
-    var stp = document.getElementById("stopit");
     display.src = "";
     src_show.innerHTML = "Waiting For Playing...";
-    stp.style.display = "none";
+    control.style.display = "none";
+}
+
+function pausePlaying()
+{
+    if(display.paused)
+    {
+        buttonImage.src = "/image/Pause.svg";
+        display.play();
+        src_show.innerHTML = prevText;
+    }
+    else
+    {
+        buttonImage.src = "/image/Resume.svg";
+        display.pause();
+        prevText = src_show.innerHTML;
+        src_show.innerHTML = src_show.innerHTML + "(Paused)";
+    }
 }
