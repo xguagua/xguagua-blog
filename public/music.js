@@ -1,7 +1,7 @@
 const lim = Math.floor(window.alist.length * 3 / 10.0) * 10;
 
 var click_times = 0,tot = 0;
-var display,src_show,control,buttonImage,prevText;
+var display,src_show,control,buttonImage,prevText,pauseButton;
 
 
 window.onload = function()
@@ -10,6 +10,8 @@ window.onload = function()
     src_show = document.getElementById("status");
     control = document.getElementById("controller");
     buttonImage = document.getElementById("btnImg");
+    display.onpause = function(){buttonImage.src = "/image/Resume.svg";};
+    display.onplay = function(){buttonImage.src = "/image/Pause.svg";};
 }
 
 var apred = {};
@@ -52,13 +54,13 @@ function pausePlaying()
 {
     if(display.paused)
     {
-        buttonImage.src = "/image/Pause.svg";
+        // buttonImage.src = "/image/Pause.svg";
         display.play();
         src_show.innerHTML = prevText;
     }
     else
     {
-        buttonImage.src = "/image/Resume.svg";
+        // buttonImage.src = "/image/Resume.svg";
         display.pause();
         prevText = src_show.innerHTML;
         src_show.innerHTML = src_show.innerHTML + "(Paused)";

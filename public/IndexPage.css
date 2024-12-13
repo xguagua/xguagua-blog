@@ -1,0 +1,12 @@
+img
+{
+    pointer-events: none;
+}
+.HoverEvent
+{
+    opacity: 1.0;
+}
+.HoverEvent:hover
+{
+    opacity: 0.6;
+}
