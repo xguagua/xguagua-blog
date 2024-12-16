@@ -23,7 +23,7 @@ import LinkCard from "../components/page/LinkCard.astro";
             建议使用暗色主题，当然你用亮色我也不拦着 :)
 
             下面有一点我写的小功能awa
-            
+
             **施工中**
       </div>
     </div>
@@ -31,28 +31,35 @@ import LinkCard from "../components/page/LinkCard.astro";
   </BaseCard>
 
   <BaseCard title="Home" image = "/index.webp">
+      {/* <blockquote id>
+      </blockquote> */}
       <LinkCard
       title = "当前歌曲目录"
       url = "/Lists.html"
       img = "/image/Firefly_1.jpg"
       / >
     如果下面有 Now Playing 但没声音，就等一下，可能是你的文件还没同步完。
-  <div style = "text-align: center;"> 
-    <br />
-    <button onclick = "logic()" style = "float: left;font-size: 31px;font-family: KaiTi;" class = "HoverEvent">随机跳歌</button>
-    <p id = "status" style = "float: center;font-size: 18px;font-family: KaiTi;color: #57f8ff;">Waiting For Playing...</p> 
-    <audio autoplay = "true" loop = "true"  src = "" id = "displayMain" style = "display: none;" />
-    <br />
-    <br />
-    <div id = "controller" style = "display: none;">
-    <button id = "stopit" onclick = "stopPlaying()" style = "float: left;" class = "HoverEvent">
-      <img src = "/image/Stop.svg" height = "64" width = "64" style = "pointer-events: none;" / >
-    </button>
-    <button id = "pauseit" onclick = "pausePlaying()" style = "float: right;" class = "HoverEvent">
-      <img src = "/image/Pause.svg" height = "64" width = "64" style = "pointer-events: none;" id = "btnImg"/>
-    </button>
-    </div>
-  </div> 
+    <div style = "text-align: center;"> 
+      <br />
+      <button onclick = "logic()" style = "float: left;font-size: 31px;" class = "HoverEvent TextButton">随机跳歌</button>
+      <div style = "float: right;">
+        <span style = "font-size: 18px;">
+          <button style = "margin-right: 10px;font-size: 23px;" class = "TextButton" onclick = "Change(-1)">上一首</button> 
+          <button class = "TextButton" style = "font-size: 23px;" onclick = "Change(1)">下一首</button>
+        </span>
+      </div>
+      <br />
+      <p id = "status" style = "font-size: 18px;font-family: KaiTi;color: #57f8ff;">Waiting For Playing...</p> 
+      <audio loop = "true"  src = "" id = "displayMain" style = "display: none;" />
+      <div id = "controller" style = "display: none;">
+        <button id = "stopit" onclick = "stopPlaying()" style = "float: left;" class = "HoverEvent">
+          <img src = "/image/Stop.svg" height = "64" width = "64" style = "pointer-events: none;" / >
+        </button>
+        <button id = "pauseit" onclick = "pausePlaying()" style = "float: right;" class = "HoverEvent">
+          <img src = "/image/Pause.svg" height = "48" width = "48" style = "pointer-events: none;" id = "btnImg"/>
+        </button>
+      </div>
+    </div> 
   </BaseCard>
 </BaseLayout>
 <script type = "text/javascript" src = "/ListSupport.js" / >

@@ -10,3 +10,9 @@ img
 {
     opacity: 0.6;
 }
+.TextButton
+{
+    font-family: KaiTi;
+    padding: 8px;
+    background-color: #2f2f2f;
+}

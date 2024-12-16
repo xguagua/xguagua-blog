@@ -1,8 +1,7 @@
-const lim = Math.floor(window.alist.length * 3 / 10.0) * 10;
+const lim = Math.floor(window.alist.length * 3 / 10.0) * 10,len = window.alist.length;
 
-var click_times = 0,tot = 0;
-var display,src_show,control,buttonImage,prevText,pauseButton;
-
+var click_times = 0,tot = 0,currentID = -1145;
+var display,src_show,control,buttonImage,prevText,pauseButton,listButton;
 
 window.onload = function()
 {
@@ -12,12 +11,21 @@ window.onload = function()
     buttonImage = document.getElementById("btnImg");
     display.onpause = function(){buttonImage.src = "/image/Resume.svg";};
     display.onplay = function(){buttonImage.src = "/image/Pause.svg";};
+    listButton = document.getElementById("ListSong");
 }
 
 var apred = {};
 function rnd()
 {
     return Math.floor(Math.random() * 114514 * Math.PI / 191 + 1654 * Math.E);
+}
+function ASync()
+{
+    control.style.display = "block";
+    src_show.innerHTML = "Now Playing: " + window.alist[currentID];
+    prevText = src_show.innerHTML;
+    display.src = "/audio/" + window.alist[currentID] + ".mp3";
+    display.play();
 }
 function logic()
 {
@@ -28,18 +36,17 @@ function logic()
     }
     let id;
     do 
-        id = rnd() % window.alist.length;
+        id = rnd() % len;
     while(apred[id]);
     apred[id] = true;
     ++tot;
-    if(tot >= window.alist.length * 3 / 4)
+    if(tot >= len * 3 / 4)
     {
-        apred[rnd() % window.alist.length] = false;
+        apred[rnd() % len] = false;
         --tot;
     }
-    control.style.display = "block";
-    display.src = "/audio/" + window.alist[id] + ".mp3";
-    src_show.innerHTML = "Now Playing: " + window.alist[id];
+    currentID = id;
+    ASync();
     click_times++;
 }
 
@@ -54,15 +61,21 @@ function pausePlaying()
 {
     if(display.paused)
     {
-        // buttonImage.src = "/image/Pause.svg";
         display.play();
         src_show.innerHTML = prevText;
     }
     else
     {
-        // buttonImage.src = "/image/Resume.svg";
         display.pause();
         prevText = src_show.innerHTML;
         src_show.innerHTML = src_show.innerHTML + "(Paused)";
     }
+}
+
+function Change(dx)
+{
+    if(display.paused)
+        logic();
+    currentID = (currentID + dx + len) % len;
+    ASync();
 }
