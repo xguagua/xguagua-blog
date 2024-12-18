@@ -16,5 +16,6 @@ window.alist = [
     "风与约定",
     "Shed a Light",
     "群青",
-    "怪物"
+    "怪物",
+    "Moon Halo"
 ]

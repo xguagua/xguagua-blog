@@ -10,7 +10,8 @@ export const DATE_FORMAT = "ddd MMM DD YYYY";
 // User profile information
 export const USER_NAME = "xguagua";
 export const USER_SITE = "https://xguagua.cfd"
-export const USER_AVATAR = "/profile.webp";
+export const ORIGIN_AVATAR = "/profile.webp";
+export const CLICKED_AVATAR = "/profilec.webp"
 
 // Server and transition settings
 export const SERVER_URL = "https://demo.saroprock.com";

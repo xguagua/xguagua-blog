@@ -15,29 +15,33 @@ changeLanguage("en");
 const { title, image, includeSidebar = true } = Astro.props;
 ---
 
+<!--
+更新计划：
+
+1.加入类似 LOJ 的一言
+2.线段树 & 微积分 P2 Blog
+
+ -->
 <!doctype html>
 <html lang={i18next.language} class="bg-base-300" data-theme="winter">
   <head>
     <meta charset="UTF-8" />
     <title class="sr-only" id = "classifyTitle">{`${title} - ${SITE_TAB}`}</title>
-    <script>
-      var Origin = "";
-      const Timeout = 1500;
+    <script type="text/javascript">
+      var Origin = document.title,elementTitle = document.getElementById("classifyTitle");
       
-      var elementTitle = document.getElementById("classifyTitle") as Element;
-      Origin = document.title;
       function ResetTitle() {elementTitle.innerHTML = Origin;};
       function Main()
       {
           if(document.visibilityState === "hidden")
           {
               elementTitle.innerHTML = "你要走了吗？那，再见喽？";
-              setTimeout(ResetTitle,Timeout);
+              setTimeout(ResetTitle,1500);
           }
           if(document.visibilityState === "visible")
           {
               elementTitle.innerHTML = "欢迎回来！";
-              setTimeout(ResetTitle,Timeout);
+              setTimeout(ResetTitle,1500);
           }
       };
       document.addEventListener("visibilitychange",Main);

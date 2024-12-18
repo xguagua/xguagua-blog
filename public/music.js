@@ -1,6 +1,6 @@
-const lim = Math.floor(window.alist.length * 3 / 10.0) * 10,len = window.alist.length;
+const Limitation = Math.floor(window.alist.length * 3 / 10.0) * 10,len = window.alist.length;
 
-var click_times = 0,tot = 0,currentID = -1145;
+var click_times = 0,tot = 0,currentID = 0;
 var display,src_show,control,buttonImage,prevText,pauseButton,listButton;
 
 window.onload = function()
@@ -29,9 +29,9 @@ function ASync()
 }
 function logic()
 {
-    if(click_times >= lim)
+    if(click_times >= Limitation)
     {
-        alert("你已经使用过了" + lim.toString() + "多遍了,休息一下好不好");
+        alert("你已经使用过了" + Limitation.toString() + "多遍了,休息一下好不好");
         return ;
     }
     let id;
@@ -74,8 +74,6 @@ function pausePlaying()
 
 function Change(dx)
 {
-    if(display.paused)
-        logic();
     currentID = (currentID + dx + len) % len;
     ASync();
 }
