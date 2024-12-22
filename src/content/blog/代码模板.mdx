@@ -1,0 +1,72 @@
+---
+title: 代码模板
+description: 代码模板
+pubDate: 2024-12-19
+tags:
+    - OI
+---
+
+import Collapse from "../../components/blog/collapse.astro";
+
+各种地方都在施工。。。
+
+# 图论
+
+### 链式前向星
+
+<Collapse title = "普通的">
+```cpp
+struct graph
+{
+    struct edge
+    {
+        int v,w,next;
+    }e[MAXM];
+    int head[MAXN],cnt;
+    void add(int u,int v)
+    {
+        e[++cnt].v = v;
+        e[cnt].next = head[u];
+        head[u] = cnt;
+    }
+}
+```
+</Collapse>
+
+<Collapse title = "指针式">
+```cpp
+struct graph
+{
+    struct edge
+    {
+        int v;
+        edge *next;
+        edge(int,edge*);
+        ~edge()
+        {
+            if(!next)
+                delete next;
+        };
+    }*head[MAXM];
+    int sz,*tf,*ts;
+    graph(int m)
+    {
+        sz = m;
+    }
+    ~graph()
+    {
+        for(int i = 1;i <= sz;i++)
+        {
+            if(!head[i])
+                delete head[i];
+        }
+    }
+    void add(int u,int v)
+    {
+        edge* ptr = new edge(v,head[u]);
+        head[u] = ptr;
+    }
+};
+graph::edge::edge(int v,edge* next):v(v),next(next){};
+```
+</Collapse>
