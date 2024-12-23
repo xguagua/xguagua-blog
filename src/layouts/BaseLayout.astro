@@ -15,13 +15,6 @@ changeLanguage("en");
 const { title, image, includeSidebar = true } = Astro.props;
 ---
 
-<!--
-更新计划：
-
-1.加入类似 LOJ 的一言
-2.线段树 & 微积分 P2 Blog
-
- -->
 <!doctype html>
 <html lang={i18next.language} class="bg-base-300" data-theme="winter">
   <head>
@@ -58,6 +51,7 @@ const { title, image, includeSidebar = true } = Astro.props;
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
+    <link rel = "preload" href = "/profilec.webp" as = "image">
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} image={image} />
   </head>
   <body>
