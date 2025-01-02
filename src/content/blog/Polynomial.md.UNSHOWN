@@ -1,0 +1,169 @@
+---
+title: 多项式全家桶
+description: 多项式
+pubDate: 2024-12-5
+categories:
+    - 大数学照亮世界
+    - 算法学习笔记
+tags:
+    - 数学
+    - OI
+---
+
+import Collapse from "../../components/blog/collapse.astro";
+
+
+# 0.多项式的定义与运算
+
+上了初一的就知道吧，可以写成 $ A(x) = \sum _ {i = 0} ^ n a _ i x ^ i $
+
+### 加法
+
+就是对应位置的数相加，若不存在就视为 $0$，形式化的就是 $ A(x) + B(x) = \sum _ {i = 0} ^ n (a _ i + b _ i)x ^ i $。
+
+### 乘法
+
+也称卷积，$ A(x) \ast B(x) = \sum _ {i = 0} ^ n (\sum _ {k = 0} ^ i  a _ i b _ {n - i} )x ^ i $
+
+设所有多项式的集合为 $P$。
+
+加法满足交换律，结合律，$ G(P,+) $ 构成 Abel 群，乘法满足结合律与对加法的分配律。
+
+所以，$ R(P,+,\ast) $ 构成一个 **环**。
+
+# 1.多项式乘法加速
+
+朴素的做是 $\Omicron(n ^ 2)$ 的，经过优化可以达到 $ \Omicron(n \log n) $
+
+### DFT/IDFT/FFT
+
+[详见这里，不想写了](/blog/fastfouriertransform/)
+
+### NTT
+
+复数运算还是太慢了，并且不能取模而且有精度问题，所以我们考虑尝试在整数域上进行这些操作。
+
+#### 一点数论知识
+
+阶： 若 $ a ^ l \equiv 1 \pmod p $，则 $l _ {min}$ 称为 $a$ 在模 $p$ 意义下的阶。
+
+原根： 若 $g$ 在模 $p$ 意义下的阶为 $\phi(p)$，则 $g$ 称为模 $p$ 意义下的原根。
+
+#### 正文
+
+我们发现，$g _ 1 ,\ldots,g ^ {\phi (p)}$ 在模 $p$ 意义下互不相同，往后就循环了，和单位根很相似。
+
+我们考虑用一个大质数的原根来代替单位根，一般取 $998244353$，原根为 $3$。
+
+另外，在 MTT 中需要至少 $2$ 个质数来应用 CRT，此时就会用其他两个质数 $469762049,1004535809$，原根都为 $3$。
+
+所以，我们只要改一下 FFT 板子，把 $\omega ^ n _ k$ 替换为 $g ^ {\frac{\phi(p)}{n}}$ 就好了。
+
+然后关于逆变换，就是乘上原根的逆元，再乘上长度的逆元就行了。
+
+<Collapse title = "封装后的 NTT 多项式乘法">
+
+```cpp
+constexpr int MOD = 998244353,PHI = 998244352,GEN = 3,IGEN = 332748118;
+struct Polynomial
+{
+    int val[MAXN],len;
+    Polynomial()
+    {
+        memset(val,0,sizeof(val));
+        len = 0;
+    };
+    void NTT(int len,short type)
+    {
+        for(int i = 0;i < len;i++)
+        {
+            if(i < rev[i])
+                swap(val[i],val[rev[i]]);
+        }
+        for(int h = 2;h <= len;h <<= 1)
+        {
+            int idg = qpow((type == 1 ? GEN : IGEN),PHI / h);
+            for(int j = 0;j < len;j += h)
+            {
+                int pw = 1;
+                for(int k = j;k < j + (h >> 1);k++)
+                {
+                    int e = val[k],o = pw * val[k + (h >> 1)] % MOD;
+                    val[k] = (e + o) % MOD;
+                    val[k + (h >> 1)] = ((e - o) % MOD + MOD) % MOD;
+                    pw = pw * idg % MOD;
+                }
+            }
+        }
+        if(type == -1)
+        {
+            int inv = qpow(len,MOD - 2);
+            for(int i = 0;i < len;i++)
+                val[i] = val[i] * inv % MOD;
+        }
+    }
+    Polynomial operator*(Polynomial &a)
+    {
+        int L = len + a.len,len = 1;
+        while(L)
+        {
+            len <<= 1;
+            L >>= 1;
+        }
+        for(int i = 1;i < len;i++)
+        {
+            rev[i] = rev[i >> 1] >> 1;
+            if(i & 1)
+                rev[i] |= len >> 1;
+        }
+        NTT(len,1),a.NTT(len,1);
+        Polynomial res;
+        res.len = len;
+        for(int i = 0;i < len;i++)
+            res.val[i] = val[i] * a.val[i];
+        res.NTT(len,-1);
+        return res;
+    }
+}
+```
+
+</Collapse>
+
+好了，有这些基础就可以看下面了。
+
+# 1.多项式求逆
+
+就是求一个多项式 $G(x)$，使得 $F(x)G(x) \equiv 1 \pmod {x ^ n}$。
+
+我们设 $F(x) H(x) \equiv 1\pmod {x ^ {\lceil \frac{n}{2} \rceil}}$。
+
+所以 $ F(x)G(x) \equiv 1 \pmod {x ^ {\lceil \frac{n}{2} \rceil}} $。
+
+两式相减，得 $ F(x)(G(x) - H(x)) \equiv 0 \pmod {x ^ {\lceil \frac{n}{2} \rceil}} $，即 $ G(x) - H(x) \equiv 0 \pmod {x ^ {\lceil \frac{n}{2} \rceil}} $。
+
+平方，得 $ G ^ 2(x) - 2G(x)H(x) + H ^ 2(x) \equiv 0 \pmod {x ^ n} $。
+
+同时乘 $F(x)$ 并移项，得到 $ G(x) \equiv 2H(x) - F(x) H ^ 2(x) \pmod {x ^ n} $。
+
+然后用 NTT 加速乘法就可以在 $\Omicron(n \log n)$ 的复杂度内求得了。
+
+从 $ H(x) = a _ 0 ^ {-1} $ 开始递推至 $x ^ {2 ^ k},2 ^ k \ge n $ 就好了。
+
+# 2.多项式 ln
+
+求多项式 $G(x) = \ln(F(x)) $。
+
+两边同时求导，得 $ G'(x) = \frac{F'(x)}{F(x)}$，求个逆再求个导就可以算出 $ G'(x) $ 了。然后再积分回去，常数项为 $ \ln f_ 0 $。
+
+是个学过微积分基础的应该都知道多项式该怎么求导怎么积分吧。。。
+
+<Collapse title = "如果你没学过">
+
+左转[我的微积分初步博客](/blog/%E5%BE%AE%E7%A7%AF%E5%88%86%E5%88%9D%E6%AD%A5p1/)，下面也有结论。
+
+$$
+(x ^ n)' = nx ^ {n - 1} \\ 
+\int x ^ n \text{d}x = \frac{x ^ {n + 1}}{n + 1}
+$$
+
+</Collapse>
