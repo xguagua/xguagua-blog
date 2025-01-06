@@ -52,18 +52,6 @@ const { title, image, includeSidebar = true } = Astro.props;
       })();
     </script>
     <link rel = "preload" href = "/profilec.webp" as = "image">
-    <div id = "linkArea">
-    </div>
-    <script src = "/ListSupport.js" type = "text/javascript"></script>
-    <script type="text/javascript">
-      var Part = document.getElementById("linkArea");
-      for(let i = 0;i < window.alist.length;i++)
-      {
-        let elem = document.createElement("link");
-        elem.rel = "preload",elem.href = "/audio/" + window.alist[i] + ".mp3",elem.as = "audio";
-        Part.appendChild(elem);
-      }
-    </script>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} image={image} />
   </head>
   <body>
