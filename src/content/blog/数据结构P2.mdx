@@ -1,0 +1,285 @@
+---
+title: 数据结构Part 2
+description: 线段树
+pubDate: 2025-1-8
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+---
+
+这玩意会持续更新，因为太多了。
+
+# 0.定义
+
+线段树是一种可以很方便的维护区间信息的 DS，是一种**Leafy Tree**。
+
+线段树的一个节点是维护的原序列的一段区间的信息。具体结构是一棵完全二叉树，若一个节点维护的是 $[l,r]$ 的信息，设 $m = \lfloor \frac{l + r}{2} \rfloor$ 则根节点的左儿子维护的就是 $ [l,m] $，右儿子维护的是 $ [m + 1,r] $ 的信息。
+
+节点需要用 `pushup` 操作来合并信息，由于是分两块计算，所以维护的东西必须有**结合律**，更准确的说，维护的信息必须是个幺半群，即需要有结合律，有单位元。
+
+一般设根节点的下标为 `rt`，则左子树的下标为 `rt * 2 = rt << 1`，右子树的下标为 `rt * 2 + 1 = rt << 1 | 1`。
+
+结构体如下：
+
+```cpp
+struct Rukkhadevata
+{
+    int l,r;
+    Info...;
+    // Lazytag...;
+}tree[MAXN << 2];
+inline void pushup(int rt)
+{
+    tree[rt].info = merge(tree[rt << 1].info,tree[rt << 1 | 1].info);
+}
+inline void pushdown(int rt)
+{
+    if(available(tree[rt].laz))
+    {
+        Operation(rt << 1,tree[rt].laz);
+        Operation(rt << 1 | 1,tree[rt].laz);
+        reset(tree[rt].laz);
+    }
+}
+```
+
+需要注意，这种堆式存储**要开 4 倍空间**。
+
+# 1.操作
+
+## 建树
+
+我们递归的处理每个区间，对每个节点分配边界，如果是叶子节点就分配信息，在回溯的时候执行 `pushup` 合并信息。
+
+```cpp
+inline void build(int l,int r,int rt)
+{
+    tree[rt].l = l,tree[rt].r = r;
+    if(l == r)
+    {
+        tree[rt].info = origin[l];
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    build(l,mid,rt << 1);
+    build(mid + 1,r,rt << 1 | 1);
+    pushup(rt);
+}
+```
+
+## 区间修改类
+
+我们需要维护一个 `lazytag`，具体的，就是直接给一个子树的根节点打标记，不直接修改，等需要查询子区间的时候再 `pushdown` 下去。不同的 `lazytag` 间可能相互有影响，需要根据维护的信息适时下放标记。
+
+然后我们需要递归区间，分三种情况：
+
+1. 修改区间完全包含现区间，则直接打标记。
+2. 修改区间和现区间的左半部分有交集，就递归向左子树走。
+3. 修改区间和现区间的右半部分有交集，就递归向右子树走。
+
+模板代码如下：
+
+```cpp
+inline void modify(int l,int r,int rt,int val)
+{
+    if(l <= tree[rt].l && r >= tree[rt].r)
+    {
+        Operation(rt,val);
+        return ;
+    }
+    // pushdown(rt);
+    int mid = (tree[rt].l + tree[rt].r) >> 1;
+    if(l <= mid)
+        modify(l,r,rt << 1,val);
+    if(r > mid)
+        modify(l,r,rt << 1 | 1,val);
+    pushup(rt);
+}
+```
+
+## 区间查询类
+
+还是一样的，注意准备前往子节点的时候需要下传标记。
+
+```cpp
+inline int query(int l,int r,int rt)
+{
+    if(l <= tree[rt].l && r >= tree[rt].r)
+        return tree[rt].val;
+    // pushdown(rt);
+    int mid = (tree[rt].l + tree[rt].r) >> 1,res = identity();
+    if(l <= mid)
+        Operation(res,query(l,r,rt << 1));
+    if(r > mid)
+        Operation(res,query(l,r,rt << 1 | 1));
+    return res;
+}
+```
+
+# 2.权值线段树
+
+类似权值树状数组，可以查询全局 k 小值，查询排名等，在某些时候可以代替平衡树。
+
+# 3.动态开点线段树
+
+有的时候，题目不允许我们使用堆式存储开线段树，又不能离散化的时候，我们就可以使用动态开点的方式。具体的，就是刚开始只有一个管辖 $[1,n]$ 的根节点，等需要用的时候才开这个点。
+
+因为每次操作最多创建 $\Omicron(\log n)$ 个节点，所以最后的空间复杂度可以从 $T(4n)$ 优化到 $\Omicron(q \log n)$。
+
+结构体会有些变化：
+
+```cpp
+struct Rukkhadevata
+{
+    int ls,rs;
+    int l,r; // 其实可以不计
+    Info...;
+    // Lazytag...;
+}tree[MAXQ * LOGN];
+#define lson tree[rt].ls
+#define rson tree[rt].rs
+```
+
+需要多加一个 `newNode` 操作，你也可以选择不加。~~这怎么一股平衡树味~~
+
+```cpp
+inline int newNode(int l,int r,int val)
+{
+    ++cnt;
+    tree[cnt].l = l,tree[cnt].r = r,tree[cnt].val = val,tree[cnt].ls = tree[cnt].rs = 0;
+    return cnt;
+}
+```
+
+因为不需要初始化所有节点，所以我们可以省略建树操作。相应的，别的操作也需要一些修改。
+
+```cpp
+inline void pushup(int rt)
+{
+    tree[rt].val = merge(tree[lson].val,tree[rson].val);
+}
+inline void pushdown(int rt)
+{
+    if(tree[rt].laz)
+    {
+        if(lson)
+            Operation(lson,tree[rt].laz);
+        if(rson)
+            Operation(rson,tree[rt].laz);
+        reset(tree[rt].laz);
+    }
+}
+inline void modify(int &rt,int l,int r,int L,int R,int val)
+{
+    if(!rt)
+        rt = newNode(l,r,val);
+    if(L <= l && R >= r)
+    {
+        Operation(rt,val);
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    if(L <= mid)
+        modify(lson,l,mid,L,R,val);
+    if(R > mid)
+        modify(rson,mid + 1,r,L,R,val);
+    pushup(rt);
+}
+inline int query(int rt,int l,int r,int L,int R)
+{
+    if(!rt)
+        return 0;
+    if(L <= l && R >= r)
+        return tree[rt].val;
+    int mid = (l + r) >> 1,res = identity();
+    if(L <= mid)
+        Operation(res,query(lson,l,mid,L,R));
+    if(R > mid)
+        Operation(res,query(rson,mid + 1,r,L,R));
+    return res;
+}
+```
+
+# 4.势能线段树
+
+`lazytag` 的需求就是可以合并，并且可以更新子节点。但是有的操作就不满足，比如区间开根。
+
+但是，我们惊奇的发现，区间开根对 $0$ 和 $1$ 没有贡献。所以，我们可以维护区间最大值，若最大值 $\le 1$ 则直接返回，否则接着向下走。
+
+也因此，我们可以维护区间历史最值，区间取 `min/max` 等操作，而这就是吉司机线段树。
+
+# 5.李超线段树
+
+~~这是真“线段”树~~
+
+这个线段树是用来维护线段的最高/最低点的，并且可以支持插入线段。
+
+每个节点维护的是一段区间内的最优线段，就是这个线段在区间中点处的 $y$ 值是最大的线段。
+
+这个东西的核心就在分类讨论，具体如下：
+
+1. 新线段完全覆盖老线段，则直接修改，返回。
+2. 老线段完全覆盖新线段，则直接返回。
+3. 刚好交于中点，归于新线段不如老线段。
+4. 这写不下，往下看。
+
+如果 新线段 $f$ 优于老线段 $g$，就先交换一下，我们考虑中点处 $f$ 不如 $g$ 优的情况。
+
+1. 若左端点 $f$ 优于 $g$，则交点会在左区间，前往左儿子处理。
+2. 若右端点 $f$ 优于 $g$，则交点会在右区间，前往右儿子处理。
+3. 如果都不优，则直接返回。
+
+或者还有一种比较斜率的办法：
+
+1. 若 $g$ 的斜率小于 $f$，则比较中点的 $y$ 坐标，若 $g$ 小于 $f$ 则前往右儿子更新 $g$，否则前往左儿子更新 $f$。
+2. 若 $g$ 的斜率大于 $f$，且中点坐标 $g$ 小于 $f$，则前往左儿子更新 $g$，否则前右儿子更新 $f$。
+3. 斜率一致那比较截距，$f$ 优于 $g$ 就更新。
+
+查询就很简单，枚举所有可能包含 $pos$ 的线段，然后取极值。
+
+模板代码如下（不含线段拆分，给斜率优化用的那种）：
+
+```cpp
+namespace LiChaoSGT
+{
+    struct Rukkhadevata
+    {
+        int ls,rs,seg;
+    }tree[MAXN];
+    int k[MAXN],b[MAXN];
+    inline int F(int id,int x)
+    {return k[id] * x + b[id];}
+    int cnt,root;
+    inline void insert(int &rt,int l,int r,int S)
+    {
+        if(!rt)
+            tree[rt = ++cnt].seg = S;
+        else
+        {
+            if(l == r)
+            {
+                if(F(S,l) < F(tree[rt].seg,l))
+                    tree[rt].seg = S;
+                return ;
+            }
+            int mid = (l + r) >> 1;
+            if(F(S,mid) < F(tree[rt].seg,mid))
+                swap(S,tree[rt].seg);
+            if(F(S,l) < F(tree[rt].seg,l))
+                insert(tree[rt].ls,l,mid,S);
+            if(F(S,r) < F(tree[rt].seg,r))
+                insert(tree[rt].rs,mid + 1,r,S);
+        }
+    }
+    inline int query(int rt,int l,int r,int p)
+    {
+        if(!rt)
+            return LONG_LONG_MAX;
+        if(l == r)
+            return F(tree[rt].seg,p);
+        int mid = (l + r) >> 1;
+        return min(F(tree[rt].seg,p),(p <= mid) ? query(tree[rt].ls,l,mid,p) : query(tree[rt].rs,mid + 1,r,p));
+    }
+}
+```
