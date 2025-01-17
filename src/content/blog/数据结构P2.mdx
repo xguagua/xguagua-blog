@@ -8,6 +8,8 @@ tags:
     - OI
 ---
 
+import Collapse from "../../components/blog/collapse.astro";
+
 这玩意会持续更新，因为太多了。
 
 # 0.定义
@@ -119,7 +121,9 @@ inline int query(int l,int r,int rt)
 
 # 2.权值线段树
 
-类似权值树状数组，可以查询全局 k 小值，查询排名等，在某些时候可以代替平衡树。
+类似权值树状数组，可以查询全局 $k$ 小值，查询排名等，在某些时候可以代替平衡树。
+
+$k$ 小值可以线段树上二分，排名就是直接一个前缀和。
 
 # 3.动态开点线段树
 
@@ -283,3 +287,512 @@ namespace LiChaoSGT
     }
 }
 ```
+
+# 6.可持久化
+
+这玩意分两种，但维护都差不多（我感觉可持久化数据结构的变化都挺像的）
+
+## 可持久化线段树
+
+我喜欢叫可持久化数组
+
+我们先思考，怎么暴力可持久化。
+
+> 这不简单，直接复制
+
+是，但是空间立刻爆炸。
+
+我们发现，每次修改，最多会访问 $\log n$ 个节点，如下图：
+
+![](/image/PersisSGT1.png)
+
+所以，我们可以考虑只将这一条链复制下来，和原来的线段树共用一些节点，对每个版本，把根节点存下来就好了。
+
+其实懂了以后就不难写出代码，这里贴一个[模板题](https://www.luogu.com.cn/problem/P3919)的：
+
+```cpp
+namespace PersistentSGT
+{
+    struct Nahida
+    {
+        int ls,rs,val;
+    }tree[MAXN << 5];
+    int cnt,root[MAXN];
+    inline int newNode(int node)
+    {
+        ++cnt;
+        tree[cnt] = tree[node];
+        return cnt;
+    }
+    inline int build(int rt,int l,int r)
+    {
+        rt = ++cnt;
+        if(l == r)
+        {
+            tree[rt].val = a[l];
+            return cnt;
+        }
+        int mid = (l + r) >> 1;
+        tree[rt].ls = build(tree[rt].ls,l,mid);
+        tree[rt].rs = build(tree[rt].rs,mid + 1,r);
+        return rt;
+    }
+    inline int update(int rt,int l,int r,int pos,int val)
+    {
+        rt = newNode(rt);
+        if(l == r)
+            tree[rt].val = val;
+        else
+        {
+            int mid = (l + r) >> 1;
+            if(pos <= mid)
+                tree[rt].ls = update(tree[rt].ls,l,mid,pos,val);
+            else
+                tree[rt].rs = update(tree[rt].rs,mid + 1,r,pos,val);
+        }
+        return rt;
+    }
+    inline int query(int rt,int l,int r,int pos)
+    {
+        if(l == r)
+            return tree[rt].val;
+        int mid = (l + r) >> 1;
+        if(pos <= mid)
+            return query(tree[rt].ls,l,mid,pos);
+        else
+            return query(tree[rt].rs,mid + 1,r,pos);
+    }
+}
+```
+
+## 可持久化权值线段树
+
+也叫主席树。
+
+就是把权值线段树可持久化的产物，可以拿来解决**区间 k 小值**。
+
+具体来说，先离散化，然后从左到右依次添加每个值，并且每次添加完后保存根节点，这样我们就得出了所有 $[1,i]$ 的线段树，这个时候，我们可以运用差分的思想，用 $[1,r]$ 的线段树减去 $[1,l - 1]$ 的线段树（每个节点对应相减），就得到了 $[l,r]$ 的线段树。然后正常权值线段树查询 $k$ 小值就行了。
+
+## 注意
+
+但凡是可持久化的题空间一般不会太小，除非毒瘤出题人。所以我们可以大胆一点，直接开 $32$ 倍空间。
+
+并且这个东西需要共用节点，**不能**写堆式存储，必须写动态开点的写法。
+
+类似的前缀和思想在可持久化字典树也有体现。
+
+# 7.标记永久化
+
+有的时候，上面的上传/下传标记不再适用，比如写主席树和树套树的时候。
+
+这个时候，我们干脆直接不下传标记，直接在访问某个节点的时候累加所有标记就行了。
+
+修改会有些不同：如果操作区间完全覆盖现在的区间，则**只打标记不改值**，否则修改值。
+
+可以看下面的模板，实现了区间加法：
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+constexpr int MAXN = 1e5 + 24;
+struct Rukkhadevata
+{
+    int val,laz;
+}tree[MAXN << 2];
+int a[MAXN];
+inline void build(int l,int r,int rt)
+{
+    if(l == r)
+    {
+        tree[rt].val = a[l];
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    build(l,mid,rt << 1);
+    build(mid + 1,r,rt << 1 | 1);
+    tree[rt].val = tree[rt << 1].val + tree[rt << 1 | 1].val; // 建树需要 pushup 一下
+}
+inline void modify(int rt,int l,int r,int L,int R,int val)
+{
+    if(L <= l && R >= r)
+    {
+        tree[rt].laz += val; // 完全覆盖只打标记
+        return ;
+    }
+    tree[rt].val += (R - L + 1) * val; // 否则修改值
+    int mid = (l + r) >> 1;
+    if(R <= mid)
+        modify(rt << 1,l,mid,L,R,val);
+    else if(L > mid)
+        modify(rt << 1 | 1,mid + 1,r,L,R,val);
+    else
+        modify(rt << 1,l,mid,L,mid,val),modify(rt << 1 | 1,mid + 1,r,mid + 1,R,val);
+}
+inline int query(int rt,int l,int r,int L,int R)
+{
+    int res = tree[rt].laz * (R - L + 1); // 累加标记的贡献
+    if(L <= l && R >= r)
+        return tree[rt].val + res;
+    int mid = (l + r) >> 1;
+    if(R <= mid)
+        res += query(rt << 1,l,mid,L,R);
+    else if(L > mid)
+        res += query(rt << 1 | 1,mid + 1,r,L,R);
+    else
+        res += query(rt << 1,l,mid,L,mid) + query(rt << 1 | 1,mid + 1,r,mid + 1,R);
+    return res;
+}
+int n,m,opt,l,r,v;
+signed main()
+{
+    ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+    cin >> n >> m;
+    for(int i = 1;i <= n;i++)
+        cin >> a[i];
+    build(1,n,1);
+    for(int i = 1;i <= m;i++)
+    {
+        cin >> opt >> l >> r;
+        if(opt == 1)
+        {
+            cin >> v;
+            modify(1,1,n,l,r,v);
+        }
+        else
+            cout << query(1,1,n,l,r) << "\n";
+    }
+}
+```
+
+# 8.线段树维护矩阵乘法
+
+前面我们说了，线段树维护的信息实质上是一个幺半群。
+
+我们又发现，矩阵乘法这东西既有结合律还有单位元，所以可以放到线段树上维护。
+
+但直接维护，显然没有什么意义，除非有毒瘤出题人出这个可爱题。
+
+我们回过头去看[P3373 线段树2](https://www.luogu.com.cn/problem/P3373)，发现我们需要维护两个 `lazytag`，太烦了。
+
+这个时候，我们维护的矩阵乘法就有用了。
+
+我们不难发现，我们可以~~多此一举的~~做下面的操作：
+
+- $a \gets a + k \Rightarrow \begin{bmatrix} a \end{bmatrix} \gets \begin{bmatrix} a \end{bmatrix} + \begin{bmatrix} k \end{bmatrix} $
+
+然后，对于线段树的每个节点，我们考虑维护一个矩阵 $\begin{bmatrix} val & len \end{bmatrix}$，其中 $val$ 表示这个节点的值，$len$ 表示该区间长度。
+
+我们不难构造出这个转移矩阵 $\begin{bmatrix} 1 & 0 \\ k & 1 \end{bmatrix}$，使得我们可以将加法操作写成 $\begin{bmatrix} val & len \end{bmatrix} \gets \begin{bmatrix} val & len \end{bmatrix} \begin{bmatrix} 1 & 0 \\ k & 1 \end{bmatrix}$。
+
+同理，我们可以构造出一个乘法的转移矩阵 $\begin{bmatrix} k & 0 \\ 0 & 1 \end{bmatrix}$。
+
+这个时候，我们矩阵乘法的结合律就发挥作用了。我们只用维护一个矩阵作为 `lazytag`，就可以了。
+
+但是，它的作用**远不止于此**。
+
+我们可以定义广义矩阵乘法如下：
+
+$$
+C = A * B \\
+C _ {i,j} = \max A _ {i,k} + B _ {k,j}
+$$
+
+懒得证明了，反正它有结合律，还有单位元为 $\begin{bmatrix} 0 & -\infty & \ldots & -\infty \\ -\infty & 0 & \ldots & -\infty \\ \vdots & \vdots & \ddots & \vdots \\ -\infty & -\infty & \ldots & 0  \end{bmatrix}$。
+
+我们再看这道题：[P4314 CPU 监控](https://www.luogu.com.cn/problem/P4314)。
+
+我们可以将信息这么维护： $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix}$，$a _ i$ 表示这个位置的值，$b _ i$ 表示历史最值。`pushup` 就是维护区间最值，$a _ i \gets \max \{ a _ {ls _ i},a _ {rs _ i} \},b _ i \gets \max \{ b _ {ls _ i},b _ {rs _ i} \} $。
+
+因为 $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix} \to \begin{bmatrix} a _ i + k & \max \{b _ i,a _ i + k\} & 0 \end{bmatrix}$，加法矩阵是长这样的：$\begin{bmatrix} k & k & -\infty \\ -\infty & 0 & -\infty \\ -\infty & -\infty & 0 \end{bmatrix}$； $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix} \to \begin{bmatrix} k & \max \{b _ i,k\} & 0 \end{bmatrix}$，覆盖矩阵是 $\begin{bmatrix} -\infty & -\infty & -\infty \\ -\infty & 0 & -\infty \\ k & k & 0 \end{bmatrix}$。
+
+然后就可以方便的维护这些操作了。
+
+~~但是两个大常数的东西在一起真的不会 T 吗~~
+
+这个东西可能需要一些卡常，可以用标记永久化降低常数。
+
+动态 DP 也是基于这个原理，可以用数据结构维护。
+
+# 9.吉司机线段树/Segment Beats
+
+可以维护区间取最值操作/区间历史最值查询。
+
+先上一道例题
+
+> 给你一个序列 $a _ i$，维护以下操作
+> - $\forall i \in [l,r],a _ i \gets \min (a _ i,x)$
+> - 输出 $ \max \{ a _ i \},i \in [l,r] $
+> - 输出 $ \sum _ {i = l} ^ r  a _ i$
+
+我们发现取 $\min$ 很不好维护，考虑转化。
+
+我们维护以下几个值：
+
+区间内最大值 $max$，区间内严格次大值 $smx$，区间和 $sum$，区间内最大值个数 $cnt$。
+
+再维护以下 `lazytag`：
+
+加法标记 $lazsum$，取 $\min$ 标记 $lazmin$
+
+我们考虑将取 $\min$ 操作转化为加减法。
+
+对于操作 $1$，做以下分类讨论：
+
+- 若 $x \ge max$，则操作对这个区间及子区间无效，直接返回（和上面的势能线段树类似）。
+- 若 $smx \lt x \le max$，操作会对所有的 $max$ 生效，对区间和产生 $(x - max)cnt$ 的贡献，同时打标记。
+- 否则，暴力向下。
+
+这个可以通过势能分析法证明，复杂度是 $\Omicron(n \log n)$ 的。
+
+有些题会让你同时维护六个操作（区间 $\min / \max / \sum$ 修改/查询），这种~~出生~~题码量会非常大，同时需要大力分讨。
+
+所以吉司机线段树一个 `pushup` 有 $40$ 多行挺正常的。
+
+这里附一份完整代码。
+
+<Collapse title = "BZOJ 4695，上面的六个操作的">
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+constexpr int MAXN = 5e5 + 5,inf = 1e18;
+int n,m,opt,l,r,x,a[MAXN];
+struct Rukkhadevata
+{
+    int max,min,smx,smn,mxCnt,mnCnt,sum;
+    int lazmx,lazmn,lazsm;
+}tree[MAXN << 2];
+inline void pushup(int rt)
+{
+    tree[rt].sum = tree[rt << 1].sum + tree[rt << 1 | 1].sum;
+    if(tree[rt << 1].max == tree[rt << 1 | 1].max)
+    {
+        tree[rt].max = tree[rt << 1].max;
+        tree[rt].smx = max(tree[rt << 1].smx,tree[rt << 1 | 1].smx);
+        tree[rt].mxCnt = tree[rt << 1].mxCnt + tree[rt << 1 | 1].mxCnt;
+    }
+    else if(tree[rt << 1].max > tree[rt << 1 | 1].max)
+    {
+        tree[rt].max = tree[rt << 1].max;
+        tree[rt].smx = max(tree[rt << 1].smx,tree[rt << 1 | 1].max);
+        tree[rt].mxCnt = tree[rt << 1].mxCnt;
+    }
+    else
+    {
+        tree[rt].max = tree[rt << 1 | 1].max;
+        tree[rt].smx = max(tree[rt << 1].max,tree[rt << 1 | 1].smx);
+        tree[rt].mxCnt = tree[rt << 1 | 1].mxCnt;
+    }
+    if(tree[rt << 1].min == tree[rt << 1 | 1].min)
+    {
+        tree[rt].min = tree[rt << 1].min;
+        tree[rt].smn = min(tree[rt << 1].smn,tree[rt << 1 | 1].smn);
+        tree[rt].mnCnt = tree[rt << 1].mnCnt + tree[rt << 1 | 1].mnCnt;
+    }
+    else if(tree[rt << 1].min < tree[rt << 1 | 1].min)
+    {
+        tree[rt].min = tree[rt << 1].min;
+        tree[rt].smn = min(tree[rt << 1].smn,tree[rt << 1 | 1].min);
+        tree[rt].mnCnt = tree[rt << 1].mnCnt;
+    }
+    else 
+    {
+        tree[rt].min = tree[rt << 1 | 1].min;
+        tree[rt].smn = min(tree[rt << 1].min,tree[rt << 1 | 1].smn);
+        tree[rt].mnCnt = tree[rt << 1 | 1].mnCnt;
+    }
+}
+inline void build(int l,int r,int rt)
+{
+    tree[rt].lazmn = inf,tree[rt].lazmx = -inf;
+    if(l == r)
+    {
+        tree[rt].sum = tree[rt].max = tree[rt].min = a[l];
+        tree[rt].smx = -inf,tree[rt].smn = inf;
+        tree[rt].mxCnt = tree[rt].mnCnt = 1;
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    build(l,mid,rt << 1);
+    build(mid + 1,r,rt << 1 | 1);
+    pushup(rt);
+}
+inline void updateSum(int rt,int val,int l,int r)
+{
+    tree[rt].sum += (r - l + 1ll) * val;
+    tree[rt].max += val,tree[rt].min += val;
+    if(tree[rt].lazmn != inf)
+        tree[rt].lazmn += val;
+    if(tree[rt].lazmx != -inf)
+        tree[rt].lazmx += val;
+    if(tree[rt].smn != inf)
+        tree[rt].smn += val;
+    if(tree[rt].smx != -inf)
+        tree[rt].smx += val;
+    tree[rt].lazsm += val;
+}
+inline void updateMin(int rt,int val)
+{
+    if(tree[rt].max <= val)
+        return ;
+    tree[rt].sum += (val - tree[rt].max) * tree[rt].mxCnt;
+    if(tree[rt].smn == tree[rt].max)
+        tree[rt].smn = val;
+    if(tree[rt].min == tree[rt].max)
+        tree[rt].min = val;
+    tree[rt].lazmx = min(tree[rt].lazmx,val),tree[rt].max = val,tree[rt].lazmn = val;
+}
+inline void updateMax(int rt,int val)
+{
+    if(tree[rt].min > val)
+        return ;
+    tree[rt].sum += (val - tree[rt].min) * tree[rt].mnCnt;
+    if(tree[rt].smx == tree[rt].min)
+        tree[rt].smx = val;
+    if(tree[rt].max == tree[rt].min)
+        tree[rt].max = val;
+    tree[rt].lazmn = max(tree[rt].lazmn,val),tree[rt].min = val,tree[rt].lazmx = val;
+}
+inline void pushdown(int rt,int l,int r)
+{
+    int mid = (l + r) >> 1;
+    if(tree[rt].lazsm)
+    {
+        updateSum(rt << 1,tree[rt].lazsm,l,mid);
+        updateSum(rt << 1 | 1,tree[rt].lazsm,mid + 1,r);
+        tree[rt].lazsm = 0;
+    }
+    if(tree[rt].lazmx != -inf)
+    {
+        updateMax(rt << 1,tree[rt].lazmx);
+        updateMax(rt << 1 | 1,tree[rt].lazmx);
+        tree[rt].lazmx = -inf;
+    }
+    if(tree[rt].lazmn != inf)
+    {
+        updateMin(rt << 1,tree[rt].lazmn);
+        updateMin(rt << 1 | 1,tree[rt].lazmn);
+        tree[rt].lazmn = inf;
+    }
+}
+inline void modifySum(int rt,int l,int r,int L,int R,int val)
+{
+    if(L <= l && R >= r)
+        return updateSum(rt,val,l,r);
+    pushdown(rt,l,r);
+    int mid = (l + r) >> 1;
+    if(L <= mid)
+        modifySum(rt << 1,l,mid,L,R,val);
+    if(R > mid)
+        modifySum(rt << 1 | 1,mid + 1,r,L,R,val);
+    pushup(rt);
+}
+inline void modifyMin(int rt,int l,int r,int L,int R,int val)
+{
+    if(tree[rt].max <= val)
+        return ;
+    if(L <= l && R >= r && tree[rt].smx < val)
+        return updateMin(rt,val);
+    pushdown(rt,l,r);
+    int mid = (l + r) >> 1;
+    if(L <= mid)
+        modifyMin(rt << 1,l,mid,L,R,val);
+    if(R > mid)
+        modifyMin(rt << 1 | 1,mid + 1,r,L,R,val);
+    pushup(rt);
+}
+inline void modifyMax(int rt,int l,int r,int L,int R,int val)
+{
+    if(tree[rt].min >= val)
+        return ;
+    if(L <= l && R >= r && tree[rt].smn > val)
+        return updateMax(rt,val);
+    pushdown(rt,l,r);
+    int mid = (l + r) >> 1;
+    if(L <= mid)
+        modifyMax(rt << 1,l,mid,L,R,val);
+    if(R > mid)
+        modifyMax(rt << 1 | 1,mid + 1,r,L,R,val);
+    pushup(rt);
+}
+inline int querySum(int rt,int l,int r,int L,int R)
+{
+    if(L <= l && R >= r)
+        return tree[rt].sum;
+    pushdown(rt,l,r);
+    int mid = (l + r) >> 1,res = 0;
+    if(L <= mid)
+        res += querySum(rt << 1,l,mid,L,R);
+    if(R > mid)
+        res += querySum(rt << 1 | 1,mid + 1,r,L,R);
+    return res;
+}
+inline int queryMax(int rt,int l,int r,int L,int R)
+{
+    if(L <= l && R >= r)
+        return tree[rt].max;
+    pushdown(rt,l,r);
+    int mid = (l + r) >> 1,res = -inf;
+    if(L <= mid)
+        res = max(res,queryMax(rt << 1,l,mid,L,R));
+    if(R > mid)
+        res= max(res,queryMax(rt << 1 | 1,mid + 1,r,L,R));
+    return res;
+}
+inline int queryMin(int rt,int l,int r,int L,int R)
+{
+    if(L <= l && R >= r)
+        return tree[rt].min;
+    pushdown(rt,l,r);
+    int mid = (l + r) >> 1,res = inf;
+    if(L <= mid)
+        res = min(res,queryMin(rt << 1,l,mid,L,R));
+    if(R > mid)
+        res = min(res,queryMin(rt << 1 | 1,mid + 1,r,L,R));
+    return res;
+}
+signed main()
+{
+    ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+    cin >> n;
+    for(int i = 1;i <= n;i++)
+        cin >> a[i];
+    build(1,n,1);
+    cin >> m;
+    while(m--)
+    {
+        cin >> opt >> l >> r;
+        if(opt == 1)
+        {
+            cin >> x;
+            modifySum(1,1,n,l,r,x);
+        }
+        if(opt == 2)
+        {
+            cin >> x;
+            modifyMax(1,1,n,l,r,x);
+        }
+        if(opt == 3)
+        {
+            cin >> x;
+            modifyMin(1,1,n,l,r,x);
+        }
+        if(opt == 4)
+            cout << querySum(1,1,n,l,r) << '\n';
+        if(opt == 5)
+            cout << queryMax(1,1,n,l,r) << '\n';
+        if(opt == 6)
+            cout << queryMin(1,1,n,l,r) << '\n';
+    }
+}
+```
+
+</Collapse>
+
+~~太 nm 长了~~
+
+所以，不到万不得已，我不建议写吉司机线段树，矩乘线段树封装以后好写又好调。
