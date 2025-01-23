@@ -18,7 +18,17 @@ import ProjectJS from "../components/ProjectJS.astro";
 
     ---
 
-    笑死，我能做什么 Project(
+    <Collapse title = "求乘法逆元和欧拉函数">
+      计算模意义下的乘法逆元：
+      
+      <input id = "Invinputer" placeholder = "输入你要求逆元的数" /> <input id = "InvinputerMod" placeholder = "输入模数" value = "998244353" /> <br/>
+      <input id = "InvAnsDisplayer" placeholder = "答案会显示在这里" readonly = "readonly" />
+
+      计算 $\varphi$ 的值： 
+      <input id = "Phiinputer" placeholder = "输入你要求欧拉函数的数" /><br/>
+      <input id = "PhiAnsDisplayer" placeholder = "答案会显示在这里" readonly = "readonly" />
+    </Collapse>
+    <script type = "text/javascript" src = "/OITools.js" />
   </BaseCard>
 </BaseLayout>
 <ProjectJS />
