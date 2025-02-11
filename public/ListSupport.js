@@ -9,13 +9,13 @@ window.alist = [
     "Starfall",
     "Nightglow",
     "Passing Memories",
-    "See You Again",
-    "The Only Thing I Know For Real",
-    "TruE",
     "LOSER",
     "风与约定",
     "Shed a Light",
     "群青",
     "怪物",
-    "Moon Halo"
+    "TruE",
+    "Da Capo",
+    "Moon Halo",
+    "熙熙攘攘、我们的城市"
 ]
