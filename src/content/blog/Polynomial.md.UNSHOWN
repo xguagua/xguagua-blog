@@ -8,6 +8,7 @@ categories:
 tags:
     - 数学
     - OI
+    - 多项式
 ---
 
 import Collapse from "../../components/blog/collapse.astro";
@@ -47,11 +48,11 @@ import Collapse from "../../components/blog/collapse.astro";
 
 阶： 若 $ a ^ l \equiv 1 \pmod p $，则 $l _ {min}$ 称为 $a$ 在模 $p$ 意义下的阶。
 
-原根： 若 $g$ 在模 $p$ 意义下的阶为 $\phi(p)$，则 $g$ 称为模 $p$ 意义下的原根。
+原根： 若 $g$ 在模 $p$ 意义下的阶为 $\varphi(p)$，则 $g$ 称为模 $p$ 意义下的原根。
 
 #### 正文
 
-我们发现，$g _ 1 ,\ldots,g ^ {\phi (p)}$ 在模 $p$ 意义下互不相同，往后就循环了，和单位根很相似。
+我们发现，$g _ 1 ,\ldots,g ^ {\varphi (p)}$ 在模 $p$ 意义下互不相同，往后就循环了，和单位根很相似。
 
 我们考虑用一个大质数的原根来代替单位根，一般取 $998244353$，原根为 $3$。
 

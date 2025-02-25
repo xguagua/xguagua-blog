@@ -1,0 +1,131 @@
+---
+title: 线性筛
+description: 线性筛筛积性函数
+pubDate: 2025-2-25
+categories:
+    - 算法学习笔记
+    - 大数学照亮世界
+tags:
+    - 数学
+    - OI
+    - 数论
+---
+
+# 0.积性函数
+
+定义，若函数 $ f(xy) = f(x)f(y),x \perp y $，则称 $f(x)$ 是**积性函数**。
+
+若 $f(xy) = f(x)f(y)$，则称 $f(x)$ 是**完全积性函数**。
+
+# 1.埃拉托斯特尼筛法
+
+我们发现，大于 $1$ 的正整数 $n$ 的 $x(x \gt 1)$ 倍是合数，所以，我们可以从 $2$ 开始，标记每个没有被标记的数的倍数，剩下的就是合数。
+
+时间复杂度 $\Omicron(n \log \log n)$。
+
+可以用 bitset 优化，卡常后甚至可以 $\Omicron(n \log \log n) $ 艹 $\Omicron(n)$
+
+```cpp
+bitset<MAXN> vis;
+vector<int> prime;
+inline void Sieve()
+{
+    vis[1] = 0;
+    for(int i = 2;i <= n;i++)
+    {
+        if(!vis[i])
+        {
+            prime.push_back(i);
+            int t = i;
+            while(t <= n)
+                vis[t] = 1,t += i;
+        }
+    }
+}
+```
+
+# 2.欧拉筛法
+
+我们发现，埃筛会重复标记一些合数，所以我们只要不重复标记合数，时间复杂度就能做到 $\Omicron(n)$。
+
+因此，我们可以在 $i \bmod p = 0$ 时退出循环。因为这个时候 $i$ 是 $p$ 的倍数，被 $p$ 筛过了，所以就不用计算多次。
+
+代码如下。
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+constexpr int MAXN = 1e8 + 5;
+int n,q,k;
+bitset<MAXN> vis;
+vector<int> prime;
+signed main()
+{
+    ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+    cin >> n >> q;
+    vis[1] = 0;
+    for(int i = 2;i <= n;i++)
+    {
+        if(!vis[i])
+            prime.push_back(i);
+        for(int& j : prime)
+        {
+            if(i * j > n)
+                break;
+            vis[i * j] = 1;
+            if(i % j == 0)
+                break;
+        }
+    }
+}
+```
+
+# 3.欧拉筛法筛积性函数
+
+能 $\Omicron(n)$ 前提是能 $\Omicron(1)$ 计算 $f(1),f(p),f(p ^ k)$，其中 $p$ 是质数。如果不能 $\Omicron(1)$ 就会在后面跟一个 $\ln T$。
+
+我们首先分解 $i = \sum {p _ k} ^ {\alpha _ k}$，所以 $j$ 一定满足 $j \le p _ 1$，否则就被 $p _ 1$ 筛掉了。
+
+若 $j \lt p _ 1$，则我们可以通过积性函数的定义直接得出 $f(ij) = f(i)f(j)$。
+
+若 $j = p _ 1$，则上面就不成立了，需要记录 $low _ i$ 表示对于 $i$ 的 $p _ 1 ^ {\alpha _ 1}$，$\frac{i}{low _ i}$ 一定大于 $p _ i$，因此 $\gcd(\frac{i}{low _ i},low _ i \times j) = 1$，带入定义就能算出来。
+
+如果 $low _ i = i$，说明 $i = p ^ k,p \text{ is prime}$。
+
+代码如下：
+
+```cpp
+bitset<MAXN> vis;
+vector<int> prime;
+int low[MAXN],f[MAXN];
+inline void Sieve()
+{
+    vis[1] = low[1] = 1;
+    for(int i = 2;i <= n;i++)
+    {
+        if(!vis[i])
+        {
+            low[i] = i;
+            prime.push_back(i);
+            f[i] = ...;
+        }
+        for(int& j : prime)
+        {
+            if(i * j > n)
+                break;
+            vis[i * j] = 1;
+            if(i % j == 0)
+            {
+                if(low[i] = i)
+                    f[i * j] = ...(一般由 f[i] 递推);
+                else
+                    f[i * j] = f[i / low[i]] * f[low[i] * j];
+                break;
+            }
+            low[i * j] = j;
+            f[i * j] = f[i] * f[j];
+        }
+    }
+}
+```
