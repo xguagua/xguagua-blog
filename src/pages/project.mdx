@@ -18,7 +18,9 @@ import ProjectJS from "../components/ProjectJS.astro";
 
     ---
 
-    <Collapse title = "求乘法逆元和欧拉函数">
+    <Collapse title = "一些小工具">
+      ~~有 bug 也别来找我，算法没问题，有问题是 JS 计算精度低，你得找 W3C~~
+
       计算模意义下的乘法逆元：
       
       <input id = "Invinputer" placeholder = "输入你要求逆元的数" /> <input id = "InvinputerMod" placeholder = "输入模数" value = "998244353" /> <br/>
@@ -27,6 +29,10 @@ import ProjectJS from "../components/ProjectJS.astro";
       计算 $\varphi$ 的值： 
       <input id = "Phiinputer" placeholder = "输入你要求欧拉函数的数" /><br/>
       <input id = "PhiAnsDisplayer" placeholder = "答案会显示在这里" readonly = "readonly" />
+
+      判断是否为质数：
+      <input id = "PrimeInputer" placeholder = "输入要判断的数" /><br />
+      <input id = "PrimeAnsDisplayer" placeholder = "结果会显示在这里" readonly = "readonly" />
     </Collapse>
     <script type = "text/javascript" src = "/OITools.js" />
   </BaseCard>

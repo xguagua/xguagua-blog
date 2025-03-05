@@ -46,6 +46,18 @@ function calcPhi(x)
     return res;
 }
 
+function isPrime(x)
+{
+    let Upper = Math.sqrt(x);
+    for(let i = 2;i <= Upper;++i)
+    {
+        if(x % i == 0)
+            return "不是";
+    }
+    return "是";
+}
+
+
 let Invinputer = document.getElementById("Invinputer");
 let InvansDisplayer = document.getElementById("InvAnsDisplayer");
 let InvModInputer = document.getElementById("InvinputerMod");
@@ -72,4 +84,12 @@ PhiInputer.addEventListener("keypress",function(event)
 {
     if(event.key == "Enter" && PhiInputer.value != "")
         PhiAnsDisplayer.value = calcPhi(parseInt(PhiInputer.value));
+});
+
+let PrimeInputer = document.getElementById("PrimeInputer");
+let PrimeAnsDisplayer = document.getElementById("PrimeAnsDisplayer");
+PrimeInputer.addEventListener("keypress",function(event)
+{
+    if(event.key == "Enter" && PrimeInputer != "")
+        PrimeAnsDisplayer.value = isPrime(parseInt(PrimeInputer.value));
 });
