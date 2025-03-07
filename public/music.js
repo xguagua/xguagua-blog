@@ -77,3 +77,10 @@ function Change(dx)
     currentID = (currentID + dx + len) % len;
     ASync();
 }
+
+function Play(name)
+{
+    display.pause();
+    display.src = "/audio/" + name + ".mp3";
+    display.play();
+}
