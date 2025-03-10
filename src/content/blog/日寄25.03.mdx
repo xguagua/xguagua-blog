@@ -21,7 +21,7 @@ import Collapse from "../../components/blog/collapse.astro";
 
 <Collapse title = "部分题解">
 
-### CF1741E
+### [CF1741E](https://codeforces.com/problemset/problem/1741/E)
 
 简单题，考虑朴素 DP 方程 $dp _ i = dp _ j \wedge \text{able}(j + 1,i) = dp _ j \wedge ( [b _ {j + 1} = i - j] \vee [b _ i = i - j] ) $。显然这个是 $\Omicron(n ^ 2)$ 的，过不去。
 
@@ -29,7 +29,7 @@ import Collapse from "../../components/blog/collapse.astro";
 
 注意边界。
 
-### CF1974E
+### [CF1974E](https://codeforces.com/problemset/problem/1974/E)
 
 首先一眼背包 DP，只不过背包容量是变化的，但是不影响，我们枚举的时候可以只枚举到当前上界。
 
@@ -37,7 +37,7 @@ import Collapse from "../../components/blog/collapse.astro";
 
 需要注意，中途超过当月上界的话，我们直接复制 $dp _ {i - 1,j}$，也就是不进行转移。
 
-### CF1987D
+### [CF1987D](https://codeforces.com/problemset/problem/1987/D)
 
 首先，B 可以选择拦截或者不拦截，拦截就需要取走所有的 $x$。因此，我们可以写出一个类似背包 DP ~~怎么又是背包~~的方程，然后答案就是 $\min dp _ {n,i}$。
 
@@ -147,7 +147,7 @@ $$
 
 <Collapse title = "补题记录">
 
-### P4316
+### [P4316](https://www.luogu.com.cn/problem/P4316)
 
 期望板，套了个拓扑排序而已。
 
@@ -155,7 +155,7 @@ $$
 
 想到了方程，但没有注意到转移条件导致 WA，参考了题解才发现哪里挂了。
 
-### CF768D
+### [CF768D](https://codeforces.com/problemset/problem/768/D)
 
 简单概率题。
 
@@ -163,7 +163,7 @@ $$
 
 需要一些分类讨论的简单期望题。
 
-### P1850
+### [P1850](https://www.luogu.com.cn/problem/P1850)
 
 之前写过，方程也列对了，但是因为把 `k[i - 1]` 打成了 `k[i * 1]` 还半天没找出来，就去看了之前的代码，所以评个 1.5。
 
@@ -171,7 +171,7 @@ $$
 
 结合了状压的期望题。
 
-### CF24D
+### [CF24D](https://codeforces.com/problemset/problem/24/D)
 
 高斯消元解决后效性 DP 板子，但是朴素的高斯消元是 $\Omicron(n ^ 3)$ 的，会被卡，所以要用对 band-matrix 的高斯消元优化。
 
@@ -182,3 +182,57 @@ $$
 </Collapse>
 
 ~~最糖的一集~~
+
+## 3.10
+
+3.8 的改题去了，不想写了。
+
+今天是 DP 专题。
+
+<Collapse title = "今日份题解">
+
+### [CF1932F](https://codeforces.com/problemset/problem/1932/F)
+
+看到题目，$10 ^ 6$，$\Omicron(n \log n)$ 预定。我们可以直接设 $dp _ i$ 表示前 $i$ 个点中，钦定第 $i$ 个必须选的答案，则覆盖了 $i$ 的区间都不能选，因此只能从最左的端点左侧转移来。
+
+所以，有 $dp _ i = cnt _ i + \max _ {0 \le j \lt pos _ i} dp _ j$。所以，预处理阶段我们需要维护区间取 $\min$，区间加法，单点查询，转移阶段我们需要维护前缀最大值，单点更新。
+
+因为吉司机线段树是 $\Omicron(\log ^ 2 n)$ 的，所以我们可以先按左端点从大到小排序，维护区间推平，用珂朵莉树；区间加法可以直接前缀和，也可以写一个树状数组。
+
+转移直接拿树状数组优化就好了，答案为 $\max dp $。
+
+### [CF1950G](https://codeforces.com/problemset/problem/1950/G)
+
+$n \le 16$，考虑搜索，暴搜试过了，会 T。
+
+考虑记忆化，我们 DFS 函数可以设计为 `int dfs(int pos,int len,int sta)`，表示位置，长度和选择的状态，返回最大的长度即可。
+
+### [CF1935C](https://codeforces.com/problemset/problem/1935/C)
+
+还以为是背包 DP，其实不是。
+
+观察到，集合中的元素按 $b$ 排序后，$\sum a$ 不会变，$\sum |b _ i - b _ {i + 1}|$ 会最小，为 $\max b - \min b$。
+
+所以，我们考虑先按 $b$ 从小到大排序，因为值域太大，所以将状态设计为 $dp _ {i,j}$ 表示前 $i$ 个中选 $j$ 个的最小花费。
+
+则我们有：$dp _ {i,1} = a _ i - b _ i$，$dp _ {i,j} = a _ i + \min dp _ {k,j - 1}$。
+
+维护个前缀最大值就能做到 $\Omicron(n ^ 2)$ 了。
+
+### [CF1929D](https://codeforces.com/problemset/problem/1929/D)
+
+可以用类似点分治里的路径合并的方式思考，把一条任意路径拆成两条过根节点的路径，则两条路径中危险点的数量和不能超过 $3$。
+
+然后 DP，设 $dp _ {i,0/1/2}$，表示以 $i$ 为根的子树中有 $0/1/2$ 个危险点的方案数。
+
+则 $dp _ {i,0}$ 显然为 $1$，$dp _ {i,1} = \prod (dp _ {v,0} + dp _ {v,1}) = \prod (dp _ {v,1} + 1)$，$dp _ {i,2} = \sum (dp _ {v,1} + dp _ {v,2})$。
+
+答案为 $\sum dp _ 1$
+
+### [CF1926G](https://codeforces.com/problemset/problem/1926/G)
+
+首先，我们可以将 C 看作任意一种人，于是，我们设 $dp _ {u,0/1}$ 表示点 $u$ 视为 S/P，若本来有值，就把另一个值设为正无穷。
+
+则 $dp _ {u,i} = \min \{ dp _ {v,i},dp _ {v,i \oplus 1} + 1 \}$，最后答案为 $\min dp _ 1$。
+
+</Collapse>
