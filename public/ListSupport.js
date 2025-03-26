@@ -17,5 +17,6 @@ window.alist = [
     "TruE",
     "Da Capo",
     "Moon Halo",
-    "熙熙攘攘、我们的城市"
+    "熙熙攘攘、我们的城市",
+    "空之箱"
 ]
