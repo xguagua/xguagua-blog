@@ -78,4 +78,8 @@ int query(int l,int r)
 
 我们可以考虑对序列分块，处理块内的前后缀，再在块间建立一个 ST 表，每次我们可以将一个询问拆成三段，两边散块用处理好的前后缀，中间直接用块间的 ST 表。
 
-好了现在该考虑块长了，设块长为 $B$，则预处理 ST 表的复杂度是 $\Omicron(\frac{n}{B} \log _ 2\frac{n}{B}) = \Omicron(\frac{n}{B} \log n - \frac{n}{B} \log B)) $，$B = \log _ 2 n$ 时最优，查询是 $\Omicron(1)$ 的，这个不管。
+好了现在该考虑块长了，设块长为 $B$。
+
+预处理 ST 表的复杂度是 $\Omicron(t \frac{n}{B} \log _ 2\frac{n}{B}) = \Omicron(t (\frac{n}{B} \log n - \frac{n}{B} \log B)) $，其中 $t$ 是单次合并复杂度。
+
+$B = \log _ 2 n$ 时最优，查询是 $\Omicron(t)$ 的。
