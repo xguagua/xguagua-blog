@@ -87,13 +87,13 @@ Any perform(int l,int r,...)
 
 这种东西一看就是暴力数据结构，但是神奇的是，在保证数据随机并且有区间推平的情况下，复杂度为 $\Omicron(n \log \log n)$，并且常数很优秀。
 
-具体证明看 CF 上 ODT(lxl) 的证明，大致意思是段数是 $\Omicron(\log n)$ 级别的，然后对颜色段的操作复杂度是 $\Omicron(\log n)$ 的，所以总复杂度是 $\Omicron(n \log \log n)$ 的。
+具体证明看 CF 上 ODT 的证明，大致意思是段数是 $\Omicron(\log n)$ 级别的，然后对颜色段的操作复杂度是 $\Omicron(\log n)$ 的，所以总复杂度是 $\Omicron(n \log \log n)$ 的。
 
-总的来说，用 `set` 实现的是 $\Omicron(n \log \log n)$，`map` 和链表都是 $\Omicron(n \log n)$。
+总结就是，用 `set` 实现的是 $\Omicron(n \log \log n)$，`map` 和链表都是 $\Omicron(n \log n)$。
 
 ## 3.扩展 ODT
 
-由上得，ODT 的命根子是区间推平，可是有的毒瘤出题人，用构造的全是查询的数据来卡掉 ODT。
+由上得，ODT 是靠区间推平来维护复杂度的，可是有的出题人，会构造的全是查询的数据来卡掉 ODT。
 
 这个时候，就该用上扩展 ODT 了。
 
@@ -107,8 +107,4 @@ Any perform(int l,int r,...)
 
 然后，只要段数大于 $B( = \sqrt{n})$ 时，就算一下当前序列，然后重新构造扩展 ODT。
 
-~~甚至跑的比 Splay 的正解都快~~
-
-还有一种用法：节点对区间的映射，但是模板都 ~~nmd~~ 是黑题，不讲了。
-
-我太菜了 qwq。
+还有一种用法：节点对区间的映射，但是模板都是黑题，不会。
