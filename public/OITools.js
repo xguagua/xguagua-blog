@@ -61,6 +61,7 @@ function isPrime(x)
 let Invinputer = document.getElementById("Invinputer");
 let InvansDisplayer = document.getElementById("InvAnsDisplayer");
 let InvModInputer = document.getElementById("InvinputerMod");
+var count = 0;
 
 function MulInvHandler(event)
 {
@@ -68,6 +69,15 @@ function MulInvHandler(event)
     {
         let input = Invinputer.value;
         input = parseInt(input);
+        if(isNaN(input))
+        {
+            if(count >= 5)
+                InvansDisplayer.value = "你有毛病吧";
+            else
+                InvansDisplayer.value = "请输入一个整型";
+            ++count;
+            return ;
+        }
         let res = Exgcd(input,parseInt(InvModInputer.value));
         if(res === -1)
             InvansDisplayer.value = "没有逆元";
@@ -83,13 +93,37 @@ let PhiAnsDisplayer = document.getElementById("PhiAnsDisplayer");
 PhiInputer.addEventListener("keypress",function(event)
 {
     if(event.key == "Enter" && PhiInputer.value != "")
-        PhiAnsDisplayer.value = calcPhi(parseInt(PhiInputer.value));
+    {
+        let input = parseInt(PhiInputer.value);
+        if(isNaN(input))
+        {
+            if(count >= 5)
+                PhiAnsDisplayer.value = "你有毛病吧";
+            else
+                PhiAnsDisplayer.value = "请输入一个整型";
+            ++count;
+            return ;
+        }
+        PhiAnsDisplayer.value = calcPhi(input);
+    }
 });
 
 let PrimeInputer = document.getElementById("PrimeInputer");
 let PrimeAnsDisplayer = document.getElementById("PrimeAnsDisplayer");
 PrimeInputer.addEventListener("keypress",function(event)
 {
-    if(event.key == "Enter" && PrimeInputer != "")
-        PrimeAnsDisplayer.value = isPrime(parseInt(PrimeInputer.value));
+    if(event.key == "Enter" && PrimeInputer.value != "")
+    {
+        let input = parseInt(PhiInputer.value);
+        if(isNaN(input))
+        {
+            if(count >= 5)
+                PrimeAnsDisplayer.value = "你有毛病吧";
+            else
+                PrimeAnsDisplayer.value = "请输入一个整型";
+            ++count;
+            return ;
+        }
+        PrimeAnsDisplayer.value = isPrime(input);
+    }
 });
