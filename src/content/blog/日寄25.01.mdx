@@ -351,8 +351,8 @@ $dp _ {i,0/i}$ 表示考虑了前 $i$ 个，且第 $i$ 个有/没有 $m$。
 则有以下 DP 方程：
 
 $$
-dp _ {i,0} = \max _ {j \lt i} \{dp _ {j,1} \} \\
-dp _ {i,1} = \max _ {j \lt i} \{ dp _ {j,0} \} \\
+dp _ {i,0} = \max _ {j \lt i} \{dp _ {j,1} \}
+dp _ {i,1} = \max _ {j \lt i} \{ dp _ {j,0} \}
 $$
 
 发现这是一个前缀最大值的形式，使用树状数组优化即可。
@@ -444,7 +444,7 @@ B 题就是个二分查找的简单模拟。
 对于一个非法的 $Q$，一定有：
 
 $$
-\exist S,T \subseteq U  \\
+\exist S,T \subseteq U 
 s.t. \sum _ {i \in S} B _ i + Q = \sum _ {i \in T} B _ i 
 $$
 

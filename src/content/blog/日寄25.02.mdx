@@ -54,7 +54,7 @@ import Collapse from "../../components/blog/collapse.astro";
 则有 DP 方程如下：
 
 $$
-\text{let } k = \min (i,j) \\
+\text{let } k = \min (i,j)
 dp _ {i,j} = \sum _ {p = 1} ^ k (i + 1 - p) \times dp _ {p,j - p}
 $$
 
@@ -117,7 +117,7 @@ $$
 $$
 dp _ {i,j} = (1 - p _ i)(dp _ {i + 1,j + t _ {i + 1} - t _ i} + t _ {i + 1} - t _ i) + 
 \begin{cases}
-p _ i\min (dp _ {0,0},dp _ {i + 1,j + d _ i + t _ {i + 1} - t _ i} + d _ i + t _ {i + 1} - t _ i),j + d _ i + n - t _ i \lt r \\
+p _ i\min (dp _ {0,0},dp _ {i + 1,j + d _ i + t _ {i + 1} - t _ i} + d _ i + t _ {i + 1} - t _ i),j + d _ i + n - t _ i \lt r
 p _ i \times dp _ {0,0},\text{Otherwise}
 \end{cases}
 $$
@@ -327,7 +327,7 @@ DP，不会。
 
 联立方程：
 $$
-f _ {n,k} \times (1 - p) ^ k + f _ {n,k - 1} \times p ^ {n - k + 1} = f _ {n,k} \times p ^ k + f _ {n,k - 1} \times (1 - p) ^ {n - k + 1} \\
+f _ {n,k} \times (1 - p) ^ k + f _ {n,k - 1} \times p ^ {n - k + 1} = f _ {n,k} \times p ^ k + f _ {n,k - 1} \times (1 - p) ^ {n - k + 1}
 f _ {n,k} \times ((1 - p) ^ k - p ^ k) = f _ {n,k - 1} \times ((1 - p) ^ {n - k + 1} - p ^ {n - k + 1})
 $$
 
@@ -441,7 +441,7 @@ CF 分算完了，重新上绿了，爽了。
 
 首先，$f _ {0,j} = |j - x|$，然后我们转移。
 
-对于 $f _ {i,j}$，首先先加入线段 $i$ 的贡献，$f _ {i,j} = \begin{cases} l _ i - j, j \lt l _ i \\ 0,l _ i \le j \le r _ i \\ j - r _ i,j \gt r _ i \end{cases}$，然后我们用 $f _ {i,j} + 1$ 去更新 $f _ {i,j - 1},f _ {i,j + 1}$。
+对于 $f _ {i,j}$，首先先加入线段 $i$ 的贡献，$f _ {i,j} = \begin{cases} l _ i - j, j \lt l _ i 0,l _ i \le j \le r _ i j - r _ i,j \gt r _ i \end{cases}$，然后我们用 $f _ {i,j} + 1$ 去更新 $f _ {i,j - 1},f _ {i,j + 1}$。
 
 我们如果把 $f _ {i,j}$ 看作关于 $j$ 的函数，则我们发现它的导函数分为 $-1,0,1$ 三段，则 $f ' _  {i,j} = 0$ 的答案最优。
 

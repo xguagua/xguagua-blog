@@ -58,9 +58,8 @@ function isPrime(x)
 }
 
 
-let Invinputer = document.getElementById("Invinputer");
-let InvansDisplayer = document.getElementById("InvAnsDisplayer");
-let InvModInputer = document.getElementById("InvinputerMod");
+const maxCount = 10;
+let Invinputer = document.getElementById("Invinputer"),InvansDisplayer = document.getElementById("InvAnsDisplayer"),InvModInputer = document.getElementById("InvinputerMod");
 var count = 0;
 
 function MulInvHandler(event)
@@ -71,7 +70,7 @@ function MulInvHandler(event)
         input = parseInt(input);
         if(isNaN(input))
         {
-            if(count >= 5)
+            if(count >= maxCount)
                 InvansDisplayer.value = "你有毛病吧";
             else
                 InvansDisplayer.value = "请输入一个整型";
@@ -88,8 +87,7 @@ function MulInvHandler(event)
 Invinputer.addEventListener("keypress",MulInvHandler);
 InvModInputer.addEventListener("keypress",MulInvHandler);
 
-let PhiInputer = document.getElementById("Phiinputer");
-let PhiAnsDisplayer = document.getElementById("PhiAnsDisplayer");
+let PhiInputer = document.getElementById("Phiinputer"),PhiAnsDisplayer = document.getElementById("PhiAnsDisplayer");
 PhiInputer.addEventListener("keypress",function(event)
 {
     if(event.key == "Enter" && PhiInputer.value != "")
@@ -97,7 +95,7 @@ PhiInputer.addEventListener("keypress",function(event)
         let input = parseInt(PhiInputer.value);
         if(isNaN(input))
         {
-            if(count >= 5)
+            if(count >= maxCount)
                 PhiAnsDisplayer.value = "你有毛病吧";
             else
                 PhiAnsDisplayer.value = "请输入一个整型";
@@ -108,8 +106,7 @@ PhiInputer.addEventListener("keypress",function(event)
     }
 });
 
-let PrimeInputer = document.getElementById("PrimeInputer");
-let PrimeAnsDisplayer = document.getElementById("PrimeAnsDisplayer");
+let PrimeInputer = document.getElementById("PrimeInputer"),PrimeAnsDisplayer = document.getElementById("PrimeAnsDisplayer");
 PrimeInputer.addEventListener("keypress",function(event)
 {
     if(event.key == "Enter" && PrimeInputer.value != "")
@@ -117,7 +114,7 @@ PrimeInputer.addEventListener("keypress",function(event)
         let input = parseInt(PhiInputer.value);
         if(isNaN(input))
         {
-            if(count >= 5)
+            if(count >= maxCount)
                 PrimeAnsDisplayer.value = "你有毛病吧";
             else
                 PrimeAnsDisplayer.value = "请输入一个整型";

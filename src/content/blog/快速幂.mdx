@@ -51,7 +51,7 @@ T qpow(T b,int p)
 以斐波那契数列为例
 
 $$
-f _ i = \begin{cases} 1,i = 1,2 \\ f _ {i - 1} + f _ {i - 2} , i \gt 2 \end{cases}
+f _ i = \begin{cases} 1,i = 1,2 f _ {i - 1} + f _ {i - 2} , i \gt 2 \end{cases}
 $$
 
 很容易看出，这是一个递推式。所以我们可以把它放在一个矩阵里面。
@@ -63,7 +63,7 @@ $$
 我们 ~~惊人地~~ 发现，矩阵乘法的定义和递推的转移类似
 
 $$
-C = AB \\
+C = AB
 C _ {i,j} = \sum _ {i = 1} ^ k A _ {i,k} B _ {k,j}
 $$
 
@@ -72,12 +72,12 @@ $$
 构造方法可以使用待定系数法，如下：
 
 $$
-\begin{bmatrix} f _ {i} & f _ {i - 1} \\ 0 & 0 \end{bmatrix} \begin{bmatrix} a & b \\ c & d \end{bmatrix} = \begin{bmatrix} af _ i + c f _ {i - 1} & b f _ i + d f _ {i - 1} \\ 0 & 0 \end{bmatrix} = \begin{bmatrix} f _ {i + 1} & f _ i \\ 0 & 0 \end{bmatrix}
+\begin{bmatrix} f _ {i} & f _ {i - 1} 0 & 0 \end{bmatrix} \begin{bmatrix} a & b c & d \end{bmatrix} = \begin{bmatrix} af _ i + c f _ {i - 1} & b f _ i + d f _ {i - 1} 0 & 0 \end{bmatrix} = \begin{bmatrix} f _ {i + 1} & f _ i 0 & 0 \end{bmatrix}
 $$
 
-解得 $\begin{cases} a = 1 \\ b = 1 \\ c = 1 \\ d = 0 \end{cases}$。
+解得 $\begin{cases} a = 1 b = 1 c = 1 d = 0 \end{cases}$。
 
-所以转移矩阵就是 $\begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}$。
+所以转移矩阵就是 $\begin{bmatrix} 1 & 1 1 & 0 \end{bmatrix}$。
 
 所以斐波那契数列的第 $n + 2$ 项就是 $F _ 2 B ^ n$
 
@@ -108,7 +108,7 @@ $$
 定义一个置换群上的置换如下：
 
 $$
-\begin{pmatrix} a _ 1 & a _ 2 & \ldots & a _ n \\ a _ {\sigma  _ 1} & a _ {\sigma _ 2} & \ldots & a _ {\sigma _ n}\end{pmatrix}
+\begin{pmatrix} a _ 1 & a _ 2 & \ldots & a _ n a _ {\sigma  _ 1} & a _ {\sigma _ 2} & \ldots & a _ {\sigma _ n}\end{pmatrix}
 $$
 
 置换复合太 tm 难打了，[贴个链接看吧](https://oi-wiki.org/math/permutation/#%E5%A4%8D%E5%90%88)。
@@ -117,7 +117,7 @@ $$
 
 ### 置换开根
 
-置换在置换群上有乘法逆元，则置换 $\sigma = \begin{pmatrix} 1 & 2 & \ldots & n \\ a _ 1 & a _ 2 & \ldots & a _ n \end{pmatrix}$ 的逆 $\sigma ^ {-1}$ 为 $\begin{pmatrix} a _ 1 & a _ 2 & \ldots & a _ n \\ 1 & 2 & \ldots & n \end{pmatrix}$
+置换在置换群上有乘法逆元，则置换 $\sigma = \begin{pmatrix} 1 & 2 & \ldots & n a _ 1 & a _ 2 & \ldots & a _ n \end{pmatrix}$ 的逆 $\sigma ^ {-1}$ 为 $\begin{pmatrix} a _ 1 & a _ 2 & \ldots & a _ n 1 & 2 & \ldots & n \end{pmatrix}$
 
 又因为 $\sqrt[n]x = x ^ {\frac{1}{n}} = (x ^ n) ^ {-1} $，所以也可以用快速幂优化。
 

@@ -495,9 +495,9 @@ signed main()
 
 然后，对于线段树的每个节点，我们考虑维护一个矩阵 $\begin{bmatrix} val & len \end{bmatrix}$，其中 $val$ 表示这个节点的值，$len$ 表示该区间长度。
 
-我们不难构造出这个转移矩阵 $\begin{bmatrix} 1 & 0 \\ k & 1 \end{bmatrix}$，使得我们可以将加法操作写成 $\begin{bmatrix} val & len \end{bmatrix} \gets \begin{bmatrix} val & len \end{bmatrix} \begin{bmatrix} 1 & 0 \\ k & 1 \end{bmatrix}$。
+我们不难构造出这个转移矩阵 $\begin{bmatrix} 1 & 0 k & 1 \end{bmatrix}$，使得我们可以将加法操作写成 $\begin{bmatrix} val & len \end{bmatrix} \gets \begin{bmatrix} val & len \end{bmatrix} \begin{bmatrix} 1 & 0 k & 1 \end{bmatrix}$。
 
-同理，我们可以构造出一个乘法的转移矩阵 $\begin{bmatrix} k & 0 \\ 0 & 1 \end{bmatrix}$。
+同理，我们可以构造出一个乘法的转移矩阵 $\begin{bmatrix} k & 0 0 & 1 \end{bmatrix}$。
 
 这个时候，我们矩阵乘法的结合律就发挥作用了。我们只用维护一个矩阵作为 `lazytag`，就可以了。
 
@@ -506,17 +506,17 @@ signed main()
 我们可以定义广义矩阵乘法如下：
 
 $$
-C = A * B \\
+C = A * B
 C _ {i,j} = \max A _ {i,k} + B _ {k,j}
 $$
 
-懒得证明了，反正它有结合律，还有单位元为 $\begin{bmatrix} 0 & -\infty & \ldots & -\infty \\ -\infty & 0 & \ldots & -\infty \\ \vdots & \vdots & \ddots & \vdots \\ -\infty & -\infty & \ldots & 0  \end{bmatrix}$。
+懒得证明了，反正它有结合律，还有单位元为 $\begin{bmatrix} 0 & -\infty & \ldots & -\infty -\infty & 0 & \ldots & -\infty \vdots & \vdots & \ddots & \vdots -\infty & -\infty & \ldots & 0  \end{bmatrix}$。
 
 我们再看这道题：[P4314 CPU 监控](https://www.luogu.com.cn/problem/P4314)。
 
 我们可以将信息这么维护： $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix}$，$a _ i$ 表示这个位置的值，$b _ i$ 表示历史最值。`pushup` 就是维护区间最值，$a _ i \gets \max \{ a _ {ls _ i},a _ {rs _ i} \},b _ i \gets \max \{ b _ {ls _ i},b _ {rs _ i} \} $。
 
-因为 $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix} \to \begin{bmatrix} a _ i + k & \max \{b _ i,a _ i + k\} & 0 \end{bmatrix}$，加法矩阵是长这样的：$\begin{bmatrix} k & k & -\infty \\ -\infty & 0 & -\infty \\ -\infty & -\infty & 0 \end{bmatrix}$； $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix} \to \begin{bmatrix} k & \max \{b _ i,k\} & 0 \end{bmatrix}$，覆盖矩阵是 $\begin{bmatrix} -\infty & -\infty & -\infty \\ -\infty & 0 & -\infty \\ k & k & 0 \end{bmatrix}$。
+因为 $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix} \to \begin{bmatrix} a _ i + k & \max \{b _ i,a _ i + k\} & 0 \end{bmatrix}$，加法矩阵是长这样的：$\begin{bmatrix} k & k & -\infty -\infty & 0 & -\infty -\infty & -\infty & 0 \end{bmatrix}$； $\begin{bmatrix} a _ i & b _ i & 0 \end{bmatrix} \to \begin{bmatrix} k & \max \{b _ i,k\} & 0 \end{bmatrix}$，覆盖矩阵是 $\begin{bmatrix} -\infty & -\infty & -\infty -\infty & 0 & -\infty k & k & 0 \end{bmatrix}$。
 
 然后就可以方便的维护这些操作了。
 

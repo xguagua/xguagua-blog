@@ -31,11 +31,11 @@ $$
 
 $$
 \begin {aligned}
-g _ n &= \sum _ {i = 0} ^ n (-1) ^ {n - i} C _ n ^ i\sum _ {j = 0} ^ iC _ i ^ j g _ j \\
-&= \sum _ {i = 0} ^ n (-1) ^ {n - i} \sum _ {j = 0} ^ i C _ n ^ i C _ i ^ j g _ j \\
+g _ n &= \sum _ {i = 0} ^ n (-1) ^ {n - i} C _ n ^ i\sum _ {j = 0} ^ iC _ i ^ j g _ j
+&= \sum _ {i = 0} ^ n (-1) ^ {n - i} \sum _ {j = 0} ^ i C _ n ^ i C _ i ^ j g _ j
 &= \sum _ {i = 0} ^ n \sum _ {j = 0} ^ i (-1) ^ {n - i} C _ n ^ j C _ {n - i} ^ {n - j} g _ j\\
-&= \sum _ {j = 0} ^ n C _ n ^ j g _ j\sum _ {i = 0} ^ {n - j} (-1) ^ i C _ {n - j} ^ i \\
-&= \sum _ {j = 0} ^ n C _ n ^ j g _ j [n - j = 0] \\
+&= \sum _ {j = 0} ^ n C _ n ^ j g _ j\sum _ {i = 0} ^ {n - j} (-1) ^ i C _ {n - j} ^ i
+&= \sum _ {j = 0} ^ n C _ n ^ j g _ j [n - j = 0]
 \end {aligned}
 $$
 
@@ -57,10 +57,10 @@ $$
 所以有:
 
 $$
-S _ 4 \gets S _ 1 \cup S _ 2,|S _ 4| = |S _ 1| + |S _ 2| + |S _ 1 \cap S _ 2| \\
-S _ 1 \cup S _ 2 \cup S _ 3 = S _ 4 \cup S _ 3 \\
+S _ 4 \gets S _ 1 \cup S _ 2,|S _ 4| = |S _ 1| + |S _ 2| + |S _ 1 \cap S _ 2|
+S _ 1 \cup S _ 2 \cup S _ 3 = S _ 4 \cup S _ 3
 \begin{aligned}
-|S _ 1 \cup S _ 2 \cup S _ 3| &= |S _ 4| + |S _ 3| + |S _ 4 \cap S _ 3| \\ &= |S _ 1| + |S _ 2| - |S _ 1 \cap S _ 2| + |(S _ 1 \cap S _ 3) \cup (S _ 2 \cap S _ 2)| \\ &= |S _ 1| + |S _ 2| + |S _ 3| - |S _ 1 \cap S _ 2| - |S _ 2 \cap S _ 3| - |S _ 1 \cap S _ 3|  \\  &+ |S _ 1 \cap S _ 2 \cap S _ 3|
+|S _ 1 \cup S _ 2 \cup S _ 3| &= |S _ 4| + |S _ 3| + |S _ 4 \cap S _ 3| &= |S _ 1| + |S _ 2| - |S _ 1 \cap S _ 2| + |(S _ 1 \cap S _ 3) \cup (S _ 2 \cap S _ 2)| &= |S _ 1| + |S _ 2| + |S _ 3| - |S _ 1 \cap S _ 2| - |S _ 2 \cap S _ 3| - |S _ 1 \cap S _ 3|   &+ |S _ 1 \cap S _ 2 \cap S _ 3|
 \end{aligned}
 $$
 

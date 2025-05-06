@@ -14,20 +14,20 @@ tags:
 
 ~~既然讲矩阵就没必要讲向量了吧~~
 
-定义一个形如 $A = \begin{bmatrix} a _ {1,1} & a _ {1,2} & \ldots & a _ {1,n} \\ a _ {2,1} & a _ {2,2} & \ldots & a _ {2,n} \\ \vdots & \vdots & \ddots & \vdots \\ a _ {m,1} & a _ {m,2} & \ldots & a _ {m,n} \end{bmatrix} $ 的数表叫做一个矩阵。矩阵实际上就是 $n$ 个行向量或 $m$ 个列向量的组合。
+定义一个形如 $A = \begin{bmatrix} a _ {1,1} & a _ {1,2} & \ldots & a _ {1,n} a _ {2,1} & a _ {2,2} & \ldots & a _ {2,n} \vdots & \vdots & \ddots & \vdots a _ {m,1} & a _ {m,2} & \ldots & a _ {m,n} \end{bmatrix} $ 的数表叫做一个矩阵。矩阵实际上就是 $n$ 个行向量或 $m$ 个列向量的组合。
 
 ### 运算
 
 设 $A,B,C$ 为 $n \times m$ 的矩阵，$D$ 为 $m \times k$ 的矩阵， $E$ 为 $n \times k$ 的矩阵
 
 $$
-A \pm B = \begin{bmatrix} a _ {1,1} \pm b _ {1,1} & a _ {1,2} \pm b _ {1,2} & \ldots & a _ {1,n} \pm b _ {1,n} \\ a _ {2,1} \pm b _ {2,1} & a _ {2,2} \pm b _ {2,2}  & \ldots & a _ {2,n} \pm a _ {2,n} \\ \vdots & \vdots & \ddots & \vdots \\ a _ {m,1} \pm b _ {m,1} & a _ {m,2} \pm b _ {m,2} & \ldots & a _ {m,n} \pm b _ {m,n} \end{bmatrix} \\
+A \pm B = \begin{bmatrix} a _ {1,1} \pm b _ {1,1} & a _ {1,2} \pm b _ {1,2} & \ldots & a _ {1,n} \pm b _ {1,n} a _ {2,1} \pm b _ {2,1} & a _ {2,2} \pm b _ {2,2}  & \ldots & a _ {2,n} \pm a _ {2,n} \vdots & \vdots & \ddots & \vdots a _ {m,1} \pm b _ {m,1} & a _ {m,2} \pm b _ {m,2} & \ldots & a _ {m,n} \pm b _ {m,n} \end{bmatrix}
 E = CD,E _ {i,j} = \sum _ {l = 1} ^ m C _ {i,l} D _ {l,j}
 $$
 
 其中，加减法满足交换律与结合律，乘法 **仅满足结合律**
 
-加法单位元为零矩阵 $O _ {n,m} = \begin{bmatrix} 0 & 0 & \ldots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \ldots & 0 \end{bmatrix} $，乘法仅在 $n = m$ 时存在单位元为单位矩阵 $I _ n = \begin{bmatrix} 1 & 0 & \ldots & 0 \\ 0 & 1 & \ldots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \ldots & 1 \end{bmatrix} $
+加法单位元为零矩阵 $O _ {n,m} = \begin{bmatrix} 0 & 0 & \ldots & 0 \vdots & \vdots & \ddots & \vdots 0 & 0 & \ldots & 0 \end{bmatrix} $，乘法仅在 $n = m$ 时存在单位元为单位矩阵 $I _ n = \begin{bmatrix} 1 & 0 & \ldots & 0 0 & 1 & \ldots & 0 \vdots & \vdots & \ddots & \vdots 0 & 0 & \ldots & 1 \end{bmatrix} $
 
 ### 与群相关
 

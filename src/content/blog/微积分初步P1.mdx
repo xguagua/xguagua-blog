@@ -30,7 +30,7 @@ $$
 
 这 b 玩意好烦啊，就是 $x \to x _ 0$ 时，能找到正数 $\epsilon,\delta$，使得 $0 \lt |x - x _ 0| \lt \epsilon$ 时，$0 \lt |f(x) - A| \lt \delta$。
 
-要注意区分函数的取值和极限，比如函数 $f(x) = \begin{cases} x,x \neq 0 \\ 114 ,x=0 \end{cases}$，$f(0) = 114$，但 $\lim _ {x \to 0} f(x) = 0$，因为极限有个含义，是无限接近但不相等。
+要注意区分函数的取值和极限，比如函数 $f(x) = \begin{cases} x,x \neq 0 114 ,x=0 \end{cases}$，$f(0) = 114$，但 $\lim _ {x \to 0} f(x) = 0$，因为极限有个含义，是无限接近但不相等。
 
 ### 运算法则 & 性质
 
@@ -38,8 +38,8 @@ $$
 
 设 $@$ 为 $\infty,a \in \R,0,0 ^ +,0 ^ -$ 中任意一个，
 $$
-\lim _ {x \to @} f(x) + \lim _ {x \to @} g(x) = \lim _ {x \to @} (f(x) + g(x)) \\ 
-\lim _ {x \to @} f(x) \times \lim _ {x \to @} g(x) = \lim _ {x \to @} (f(x) \times g(x)) \\ 
+\lim _ {x \to @} f(x) + \lim _ {x \to @} g(x) = \lim _ {x \to @} (f(x) + g(x)) 
+\lim _ {x \to @} f(x) \times \lim _ {x \to @} g(x) = \lim _ {x \to @} (f(x) \times g(x)) 
 (\lim _ {x \to @} f(x)) ^ {\lim _ {x \to @} g(x)} = \lim _ {x \to @} (f(x)) ^ {g(x)} \text{（前提是等式左边有意义）}
 $$
 
@@ -88,8 +88,8 @@ $$
 函数的一阶导反映了函数的单调性：
 
 $$
-f(x)\text{单调递增} \leftrightarrow f'(x) \gt 0 \\
-f(x)\text{单调递减} \leftrightarrow f'(x) \lt 0 \\
+f(x)\text{单调递增} \leftrightarrow f'(x) \gt 0
+f(x)\text{单调递减} \leftrightarrow f'(x) \lt 0
 $$
 
 函数的二阶导反映了函数的凹凸性：
@@ -104,8 +104,8 @@ $$
 ### 运算法则
 
 $$
-(f(x) \pm g(x))' = f'(x) \pm g'(x) \\
-(f(x)g(x))' = f'(x)g(x) + f(x)g'(x) \\
+(f(x) \pm g(x))' = f'(x) \pm g'(x)
+(f(x)g(x))' = f'(x)g(x) + f(x)g'(x)
 (\frac{f(x)}{g(x)})' = \frac{f'(x)g(x) - f(x)g'(x)}{g ^ 2 (x)}
 $$
 
@@ -117,10 +117,10 @@ $$
 ~~我认为导数的核心就是背~~
 
 $$
-(C)' = 0\ \ (x ^ a)' = ax ^ {a - 1}(a \in \Z) \\
-(a ^ x)' = a ^ x \ln a \to (e ^ x)' = e ^ x \\
-(\log _ a x)' = \frac{1}{x \ln a} \to (\ln x)' = \frac{1}{x} \\
-(\sin x)' = \cos x\ \ (\cos x)' = -\sin x \\
+(C)' = 0\ \ (x ^ a)' = ax ^ {a - 1}(a \in \Z)
+(a ^ x)' = a ^ x \ln a \to (e ^ x)' = e ^ x
+(\log _ a x)' = \frac{1}{x \ln a} \to (\ln x)' = \frac{1}{x}
+(\sin x)' = \cos x\ \ (\cos x)' = -\sin x
 (\tan x)' = \sec ^ 2 x = \frac{1}{\cos ^ 2 x} \ \ (\cot x)' = -\csc ^ 2x = -\frac{1}{\sin ^ 2 x}
 $$
 
@@ -158,7 +158,7 @@ $$
 直接给出解法：
 
 $$
-\begin{cases} f _ x + \lambda\phi _ x(x,y) = 0 \\ f _ y + \lambda\phi _ y(x,y) = 0 \end{cases}
+\begin{cases} f _ x + \lambda\phi _ x(x,y) = 0 f _ y + \lambda\phi _ y(x,y) = 0 \end{cases}
 $$
 
 解出来就好了。这种方法就非常暴力。

@@ -1,4 +1,4 @@
-var DivElem = document.getElementById("ShowPart");
+let DivElem = document.getElementById("ShowPart");
 window.onload = function(){
     for(let i = 0;i < window.alist.length;i++)
     {
