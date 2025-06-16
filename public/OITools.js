@@ -58,31 +58,34 @@ function isPrime(x)
 }
 
 
-const maxCount = 10;
+const maxCount = 15;
 let Invinputer = document.getElementById("Invinputer"),InvansDisplayer = document.getElementById("InvAnsDisplayer"),InvModInputer = document.getElementById("InvinputerMod");
 var count = 0;
 
 function MulInvHandler(event)
 {
-    if(event.key == "Enter" && Invinputer.value != "" && InvModInputer.value != "")
+    if(event.key == "Enter")
     {
-        let input = Invinputer.value;
-        input = parseInt(input);
-        if(isNaN(input))
+        if(Invinputer.value != "" && InvModInputer.value != "")
         {
-            if(count >= maxCount)
-                InvansDisplayer.value = "你有毛病吧";
+            let input = parseInt(Invinputer.value,10);
+            if(isNaN(input))
+            {
+                if(count >= maxCount)
+                    InvansDisplayer.value = "你有毛病吧";
+                else
+                    InvansDisplayer.value = "请输入一个整型",++count;
+                return ;
+            }
+            let res = Exgcd(input,parseInt(InvModInputer.value));
+            if(res === -1)
+                InvansDisplayer.value = "没有逆元";
             else
-                InvansDisplayer.value = "请输入一个整型";
-            ++count;
-            return ;
+                InvansDisplayer.value = res;
         }
-        let res = Exgcd(input,parseInt(InvModInputer.value));
-        if(res === -1)
-            InvansDisplayer.value = "没有逆元";
-        else
-            InvansDisplayer.value = res;
     }
+    else
+        InvansDisplayer.value = "";
 }
 Invinputer.addEventListener("keypress",MulInvHandler);
 InvModInputer.addEventListener("keypress",MulInvHandler);
@@ -90,37 +93,45 @@ InvModInputer.addEventListener("keypress",MulInvHandler);
 let PhiInputer = document.getElementById("Phiinputer"),PhiAnsDisplayer = document.getElementById("PhiAnsDisplayer");
 PhiInputer.addEventListener("keypress",function(event)
 {
-    if(event.key == "Enter" && PhiInputer.value != "")
+    if(event.key == "Enter")
     {
-        let input = parseInt(PhiInputer.value);
-        if(isNaN(input))
+        if(PhiInputer.value != "")
         {
-            if(count >= maxCount)
-                PhiAnsDisplayer.value = "你有毛病吧";
-            else
-                PhiAnsDisplayer.value = "请输入一个整型";
-            ++count;
-            return ;
+            let input = parseInt(PhiInputer.value,10);
+            if(isNaN(input))
+            {
+                if(count >= maxCount)
+                    PhiAnsDisplayer.value = "你有毛病吧";
+                else
+                    PhiAnsDisplayer.value = "请输入一个整型",++count;
+                return ;
+            }
+            PhiAnsDisplayer.value = calcPhi(input);
         }
-        PhiAnsDisplayer.value = calcPhi(input);
     }
+    else
+        PhiAnsDisplayer.value = "";
 });
 
 let PrimeInputer = document.getElementById("PrimeInputer"),PrimeAnsDisplayer = document.getElementById("PrimeAnsDisplayer");
 PrimeInputer.addEventListener("keypress",function(event)
 {
-    if(event.key == "Enter" && PrimeInputer.value != "")
+    if(event.key == "Enter")
     {
-        let input = parseInt(PhiInputer.value);
-        if(isNaN(input))
+        if(PrimeInputer.value != "")
         {
-            if(count >= maxCount)
-                PrimeAnsDisplayer.value = "你有毛病吧";
-            else
-                PrimeAnsDisplayer.value = "请输入一个整型";
-            ++count;
-            return ;
+            let input = parseInt(PrimeInputer.value,10);
+            if(isNaN(input))
+            {
+                if(count >= maxCount)
+                    PrimeAnsDisplayer.value = "你有毛病吧";
+                else
+                    PrimeAnsDisplayer.value = "请输入一个整型",++count;
+                return ;
+            }
+            PrimeAnsDisplayer.value = isPrime(input);
         }
-        PrimeAnsDisplayer.value = isPrime(input);
     }
+    else
+        PrimeAnsDisplayer.value = "";
 });
