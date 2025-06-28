@@ -11,7 +11,7 @@ function gcd(a,b)
 function Exgcd(a,mod)
 {
     let x,y;
-    if(gcd(a,mod) !== 1)
+    if(gcd(a,mod) !== 1 || (a % mod) === 0)
         return -1;
     function solve(a,b)
     {
@@ -57,11 +57,9 @@ function isPrime(x)
     return "是";
 }
 
-
-const maxCount = 15;
+const Limit = Math.pow(2,128);
 let Invinputer = document.getElementById("Invinputer"),InvansDisplayer = document.getElementById("InvAnsDisplayer"),InvModInputer = document.getElementById("InvinputerMod");
 var count = 0;
-
 function MulInvHandler(event)
 {
     if(event.key == "Enter")
@@ -69,12 +67,9 @@ function MulInvHandler(event)
         if(Invinputer.value != "" && InvModInputer.value != "")
         {
             let input = parseInt(Invinputer.value,10);
-            if(isNaN(input))
+            if(input >= Limit)
             {
-                if(count >= maxCount)
-                    InvansDisplayer.value = "你有毛病吧";
-                else
-                    InvansDisplayer.value = "请输入一个整型",++count;
+                InvansDisplayer.value = "太大了";
                 return ;
             }
             let res = Exgcd(input,parseInt(InvModInputer.value));
@@ -98,13 +93,10 @@ PhiInputer.addEventListener("keypress",function(event)
         if(PhiInputer.value != "")
         {
             let input = parseInt(PhiInputer.value,10);
-            if(isNaN(input))
+            if(input >= Limit)
             {
-                if(count >= maxCount)
-                    PhiAnsDisplayer.value = "你有毛病吧";
-                else
-                    PhiAnsDisplayer.value = "请输入一个整型",++count;
-                return ;
+               PhiAnsDisplayer.value = "太大了";
+               return ;
             }
             PhiAnsDisplayer.value = calcPhi(input);
         }
@@ -121,13 +113,10 @@ PrimeInputer.addEventListener("keypress",function(event)
         if(PrimeInputer.value != "")
         {
             let input = parseInt(PrimeInputer.value,10);
-            if(isNaN(input))
+            if(input >= Limit)
             {
-                if(count >= maxCount)
-                    PrimeAnsDisplayer.value = "你有毛病吧";
-                else
-                    PrimeAnsDisplayer.value = "请输入一个整型",++count;
-                return ;
+               PrimeAnsDisplayer.value = "太大了";
+               return ;
             }
             PrimeAnsDisplayer.value = isPrime(input);
         }
