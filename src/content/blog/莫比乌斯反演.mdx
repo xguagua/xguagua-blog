@@ -124,20 +124,11 @@ inline void Sieve(int n)
 
 显然，狄利克雷卷积有交换律，结合律。
 
-在这里我们列举几个狄利克雷卷积的常用函数：
-- 常数函数 $\mathbf{1}(n) = 1$
-- 幂函数 $Id _ k (n) = n ^ k$，特别的，$k = 1$ 时记作 $Id(n)$
-- 除数函数 $\sigma _ k(n) = \sum \limits _ {d \mid n} d ^ k$，在 $k = 1$ 时为约数和函数，记作 $\sigma (n)$，$k = 0$ 时为约数个数函数，记为 $d(n)$
-- 单位函数 $\epsilon(n) = [n = 1]$，相当于狄利克雷卷积的单位元，满足 $\forall f,f \ast \epsilon = f$
-- 莫比乌斯函数 $\mu (n)$
-- 欧拉函数 $\varphi (n)$
-
 知道就行了，详细讲解等我学了杜教筛再说。
 
 我们上文得到了一个关于莫比乌斯函数的结论 $\sum \limits _ {d \mid n} \mu (d) = [n = 1]$，如果我们把 $[n = 1]$ 看作 $\epsilon(n)$，则我们有 $\epsilon = \mu \ast \mathbf{1}$。
 
 假设我们要求一个函数 $f$，满足 $g(n) = \sum \limits _ {d \mid n} f(d)$，并且我们可以求出 $g$，则我们可以将原式看作 $g = f \ast \mathbf{1}$，两边同时卷积上 $\mu$，得 $f \ast \mathbf{1} \ast \mu = g \ast \mu \Rightarrow f = g \ast \mu \Rightarrow f(n) = \sum \limits _ {d \mid n} g(d) \mu (\frac{n}{d})$。
-
 
 反演结论： $g(n) = \sum \limits _ {d \mid n} f(d) \Leftrightarrow f(n) = \sum \limits _ {d \mid n} g(d) \mu(\frac{n}{d})$。
 
