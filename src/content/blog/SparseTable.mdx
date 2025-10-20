@@ -1,0 +1,67 @@
+---
+title: ST表学习笔记
+description: ST表
+pubDate: 2024-11-26
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+    - 基础算法
+---
+
+
+
+## 0.定义 & 基本思想
+
+ST 表是用来处理**可重复贡献问题**的，即 $x \operatorname{opt} x = x$，且 $opt$ 须有结合律。
+
+ST 表可以来解决区间 $\min/\max/\gcd/\text{lcm} \dots$ 等问题。
+
+基于倍增与 DP 思想，可以做到 $\Theta(n \log n)$ 预处理，$\Theta(1)$ 查询，所以有些时候优于线段树，但是不支持修改。
+
+## 1.实现
+
+设 $st _ {i,j}$ 为区间 $[i,i + 2 ^ j - 1]$ 的需要维护的值
+可得，$st _ {i,0} = a _ i$。
+
+由定义式得，$st _ {i,j} = opt(st _ {i,j - 1},st _ {i + 2 ^ {j - 1},j - 1})$。
+
+对于一个查询，可以分为两个部分：$[l,l + 2 ^ {len} - 1],[r - 2 ^ {len} + 1,r]$，其中 $len = \lfloor \log _ 2 (r - l + 1) \rfloor$所以，答案即为 $opt(st _ {l,len}, st _ {r - 2 ^ {len} + 1,len})$。
+
+常数较小，并且比线段树简单的多，所以没有修改操作就可以写 ST 表。
+
+都 2025 年了还预处理 ```lg``` 数组？我们可以使用 ```__lg(x)``` 来求出 $\lfloor \log _ 2 x \rfloor$。
+
+## 2.代码模板
+
+以区间最小值举例：
+
+```cpp
+constexpr int MAXN = ...,MXLG = (自己开计算器算一下);
+int a[MAXN],st[MAXN][MXLG];
+for(int i = 1;i <= n;i++)
+    st[i][0] = a[i];
+for(int j = 1;j <= __lg(n);j++)
+{
+    for(int i = 1;i + (1 << j) - 1 <= n;i++)
+        st[i][j] = min(st[i][j - 1],st[i + (1 << (j - 1))][j - 1]);
+}
+int query(int l,int r)
+{
+    int len = __lg(r - l + 1);
+    return min(st[l][len],st[r - (1 << len) + 1][len]);
+}
+
+```
+
+## 3. 更优秀的 RMQ
+
+因为 ST 表有个 $\Omicron(n \log n)$ 的预处理，在某些毒瘤的眼里还是太慢了，更何况还能套上线性基这种单次复杂度高达 $\Omicron(\log ^ 2 n)$ 的东西，于是我们可以用毒瘤之力打败毒瘤。
+
+我们可以考虑对序列分块，处理块内的前后缀，再在块间建立一个 ST 表，每次我们可以将一个询问拆成三段，两边散块用处理好的前后缀，中间直接用块间的 ST 表。
+
+好了现在该考虑块长了，设块长为 $B$。
+
+预处理 ST 表的复杂度是 $\Omicron(t \frac{n}{B} \log _ 2\frac{n}{B}) = \Omicron(t (\frac{n}{B} \log n - \frac{n}{B} \log B)) $，其中 $t$ 是单次合并复杂度。
+
+$B = \log _ 2 n$ 时最优，查询是 $\Omicron(t)$ 的。

@@ -28,9 +28,9 @@ site:
       href: /blog
       svg: "material-symbols:book-2-outline-rounded"
       target: _self
-    - id: project
-      text: Project
-      href: /project
+    - id: tools
+      text: Tools
+      href: /tools
       svg: "material-symbols:code-blocks-outline"
       target: _self
     - id: friend

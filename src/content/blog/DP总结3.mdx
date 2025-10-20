@@ -1,0 +1,324 @@
+---
+title: DP总结(三，子集DP)
+description: SOS DP
+pubDate: 2025-1-4
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+    - 动态规划
+---
+
+import Collapse from "../../components/mdx/Collapse.astro";
+
+~~哇这个系列诈尸了~~
+
+# 0.什么是 SOS DP
+
+就是以子集为状态的 DP，一般和状压与容斥相关，也可以用多项式科技。
+
+# 1.处理方法
+
+## (1) 高维前缀和
+
+维数 $\ge 2$ 的前缀和就是高维前缀和。
+
+前面提到过，二维前缀和可以用容斥推出公式 $ s _ {i,j} = s _ {i - 1,j} + s _ {i,j - 1} - s _ {i - 1,j - 1} + a _ {i,j} $ 。
+
+但是，您维数大点就推不出来了，并且这玩意的复杂度是 $\Omicron(2 ^ d)$ 的，一个不注意就爆炸。
+
+所以，我们可以换一个思路，一维一维地考虑，具体的，代码可以写成这样
+
+```cpp
+for(int i = 1;i <= n;i++)
+{
+    for(int j = 1;j <= m;j++)
+        sum[i][j] = sum[i][j - 1] + a[i][j];
+}
+for(int i = 1;i <= n;i++)
+{
+    for(int j = 1;j <= m;j++)
+        sum[i][j] += sum[i - 1][j];
+}
+```
+
+高维也同理，分维考虑。
+
+这玩意有什么应用呢？把一个 $k$ 位的数看作一个高维坐标，就可以对所有小于它的数求和。
+
+常用的可以求二进制下的子集和。
+
+设 $dp _ {i,sta}$ 表示考虑前 $i$ 位，状态为 $sta$ 的子集和，则若 $sta$ 的第 $i$ 位为 $0,dp _ {j,sta} = dp _ {j - 1,sta}$，若第 $i$ 位为 $1,dp _ {j,sta} = dp _ {j,sta - 1}$
+
+可以滚成一维，得到 $dp _ i = \begin{cases} dp _ i,sta _ j = 0 dp _ i - 1,sta _ j = 1 \end{cases}$
+
+核心代码如下
+
+```cpp
+for(int i = 0;i < n;i++)
+{
+    for(int j = 0;j < (1 << n);j++)
+    {
+        if(j & (1 << i))
+            dp[j] = Operation(dp[j],dp[j ^ (1 << i)]);
+    }
+}
+```
+
+这玩意挺抽象的，还是结合例题来吧
+
+### [ARC100C Or Plus Max](https://www.luogu.com.cn/problem/AT_arc100_c)
+
+我们发现，这个东西可以转化为 $\max a _ i + a _ j,i \operatorname{or}j = k$，感觉不好做，接着转为 $ \max a _ i + a _ j ,i \operatorname{or} j \subset k $。
+
+可以看到，这就很像高维前缀和，但是是高维前缀最大/次大值，但是是一样的，像上面一样做就好。
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+#define pii pair<int,int>
+using namespace std;
+
+int n;
+pii dp[(1 << 19) + 5];
+void ChkMax(pii &a,pii &b)
+{
+    if(a.first > b.first)
+        a.second = max(a.second,b.first);
+    else
+        a.second = max(a.first,b.second),a.first = b.first;
+}
+signed main()
+{
+    ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+    cin >> n;
+    for(int i = 0;i < (1 << n);i++)
+        cin >> dp[i].first;
+    for(int i = 0;i < n;i++)
+    {
+        for(int j = 0;j < (1 << n);j++)
+        {
+            if(j & (1 << i))
+                ChkMax(dp[j],dp[j ^ (1 << i)]);
+        }
+    }
+    int ans = dp[0].first + dp[0].second;
+    for(int i = 1;i < (1 << n);i++)
+    {
+        ans = max(ans,dp[i].first + dp[i].second);
+        cout << ans << "\n";
+    }
+}
+```
+
+~~虽然 FWT 秒了~~
+
+## (2) 子集反演
+
+类似二项式反演，只不过变量是一个描述子集的状态。
+
+设 $A$ 为一个符合的集合，$f(S)$ 表示 $A = S$ 的答案，$g(S)$ 表示 $S \subseteq A$，$h(S)$ 为 $S \supseteq A $ 则有：
+
+$$
+g(S) = \sum _ {T \subseteq S} f(T)  \Leftrightarrow f(S) = \sum _ {T \subseteq S} (-1) ^ {|S| - |T|} g(T) 
+h(S) = \sum _ {T \supseteq S} f(T) \Leftrightarrow f(S) = \sum _ {T \supseteq S} (-1) ^ {|T| - |S|} h(T)
+$$
+
+然后就差不多了，上例题。
+
+### [P3349 [ZJOI2016]小星星](https://www.luogu.com.cn/problem/P3349)
+
+图上 DP 不好做，就把图设成状态，作树上 DP。
+
+设 $f(S)$ 为恰好用一次 $S$ 中的元素进行重标号的方案数，$g(S)$ 为每个数至多一次的方案数，显然 $g(S) \subseteq f(S)$，那就丢反演。最后答案为 $ f(U) = \sum _ {T \subseteq U} (-1) ^ {|U| - |T|} g(T)  $。
+
+考虑怎么求 $g(S)$，设 $dp _ {u,x,S}$ 表示给 $u$ 子树重编号，$u \to x$，集合为 $S$ 的方案数，则 $g(S) = \sum _ {i = 1} ^ n dp _ {1,i,S}$，套反演公式就做出来了。
+
+## (3) FWT(快速沃尔什变换)
+
+
+主要是拿来求解类似 $ c _ i = \sum _ {j \operatorname{opt} k = i} a _ j b _ k $ 的问题，其中 $\operatorname{opt}$ 是一种位运算。
+
+这个加法和乘法还是老样子，是群意义上的，不一定是算术的加法和乘法。
+
+看到这个名字，就应该想得到 FFT 吧。
+
+FFT 的主要思想就是构造一个数列，这里是多项式的点值表示法，然后就可以 $\mathcal{F}(a) \mathcal{F}(b) = \mathcal{F}(c)$，最后通过 IFFT 转回去,FWT 也一样。
+
+### 或卷积
+
+我们构造 $FWT _ {or} (A) = \sum _ {i \operatorname{or} j = i} a _ j$，具体原因见下：
+
+$$
+\begin{aligned}
+FWT _ {or} (A) FWT _ {or} (B) &= (\sum _ {i \operatorname{or} j = i} a _ j)(\sum _ {i \operatorname{or} k = i} b _ k) 
+&= \sum _ {i \operatorname{or} j = i} \sum _ {i \operatorname{or} k = i} a _ j b_ k
+&= \sum _ {i \operatorname{or} (j \operatorname{or} k) = i} a _ j b _ k 
+&= FWT _ {or} (C)
+\end{aligned}
+$$
+
+#### 正变换
+
+设 $A _ 0$ 为 $A$ 中高位为 $0$ 的部分序列，$A _ 1$ 为高位为 $1$ 的，因为或运算只要有 $1$ 就能取，所以后面 $FWT _ {or} (A _ 1)$ 需要加上 $ FWT _ {or} (A _ 0) $ 的贡献，因此 $FWT _ {or} A = \text{merge}(FWT _ {or} (A _ 0),FWT _ {or} (A _ 0) + FWT _ {or} (A _ 1)) $，其中 $\text{merge}$ 表示直接拼接，$+$ 表示按位加。
+
+#### 逆变换
+
+代入 $FWT _ {or} (A) = A$，则 $ A = \text{merge}(A _ 0,A _ 1 - A _ 0) $
+
+所以可以像 FFT 一样合并正逆变换。
+
+```cpp
+inline void Or(int len,int *a,short type)
+{
+    for(int s = 2;s <= len;s <<= 1)
+    {
+        for(int i = 0;i < len;i += s)
+        {
+            for(int j = 0;j < (s >> 1);j++)
+                a[i + j + (s >> 1)] = (a[i + j + (s >> 1)] + a[i + j] * type + MOD) % MOD;
+        }
+    }
+}
+```
+
+### 与卷积
+
+同上，构造 $FWT _ {and} (A) = \sum _ {i \operatorname{and} j = i} a _ j$，则有 $ FWT _ {and} (A) = \text{merge}(FWT _ {and} (A _ 0) + FWT _ {and} (A _ 1),FWT _ {and} (A _ 0)) , A = \text{merge} (A _ 0 - A _ 1,A _ 0)$。
+
+~~复制并修改上面~~不难写出代码：
+```cpp
+inline void And(int len,int *a,short type)
+{
+    for(int s = 2;s <= len;s <<= 1)
+    {
+        for(int i = 0;i < len;i += s)
+        {
+            for(int j = 0;j < (s >> 1);j++)
+                a[i + j] = (a[i + j] + a[i + j + (s >> 1)] * type) % MOD;
+        }
+    }
+}
+```
+
+### 异或卷积
+
+构造太神仙了，[贴个链接吧](https://znpdco.github.io/blog/2024/05/07/FWT/#%E6%8C%89%E4%BD%8D%E5%BC%82%E6%88%96)。
+
+结论就是 $ FWT _ {xor} (A) = \text{merge}(FWT _ {xor} (A _ 0) + FWT _ {xor} (A _ 1),FWT _ {xor} (A _ 0) - FWT _ {xor} (A _ 1)),A = \text{merge}(\frac{A _ 0 + A _ 1}{2},\frac{A _ 0 - A _ 1}{2})$
+
+所以正变换时 `type = 1`，逆变换时 `type = inv(2)`。
+
+~~再改一遍代码~~
+
+```cpp
+inline void Xor(int len,int *a,short type)
+{
+    for(int s = 2;s <= len;s <<= 1)
+    {
+        for(int i = 0;i < len;i += s)
+        {
+            for(int j = 0;j < (s >> 1);j++)
+            {
+                a[i + j] = (a[i + j] + a[i + j + (s >> 1)]) % MOD;
+                a[i + j + (s >> 1)] = (a[i + j] - a[i + j + (s >> 1)] + MOD) % MOD;
+                a[i + j] = a[i + j] * type % MOD;
+                a[i + j + (s >> 1)] = a[i + j + (s >> 1)] * type % MOD;
+            }
+        }
+    }
+}
+```
+
+<Collapse title = "FWT 模板代码">
+
+```cpp
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+
+constexpr int MOD = 998244353,MAXN = (1 << 17) + 24;
+namespace FWT
+{
+    inline void Or(int len,int *a,int type)
+    {
+        for(int s = 2;s <= len;s <<= 1)
+        {
+            for(int i = 0;i < len;i += s)
+            {
+                for(int j = 0;j < (s >> 1);j++)
+                    a[i + j + (s >> 1)] = (a[i + j + (s >> 1)] + a[i + j] * type + MOD) % MOD;
+            }
+        }
+    }
+    inline void And(int len,int *a,int type)
+    {
+        for(int s = 2;s <= len;s <<= 1)
+        {
+            for(int i = 0;i < len;i += s)
+            {
+                for(int j = 0;j < (s >> 1);j++)
+                    a[i + j] = (a[i + j] + a[i + j + (s >> 1)] * type) % MOD;
+            }
+        }
+    }
+    inline void Xor(int len,int *a,int type)
+    {
+        for(int s = 2;s <= len;s <<= 1)
+        {
+            for(int i = 0;i < len;i += s)
+            {
+                for(int j = 0;j < (s >> 1);j++)
+                {
+                    int o = a[i + j];
+                    a[i + j] = (a[i + j] + a[i + j + (s >> 1)]) % MOD;
+                    a[i + j + (s >> 1)] = (o - a[i + j + (s >> 1)] + MOD) % MOD;
+                    a[i + j] = a[i + j] * type % MOD;
+                    a[i + j + (s >> 1)] = a[i + j + (s >> 1)] * type % MOD;
+                }
+            }
+        }
+    }
+}
+int n,a[MAXN],b[MAXN],A[MAXN],B[MAXN];
+inline void init()
+{
+    memcpy(A,a,sizeof(int) * (1 << n));
+    memcpy(B,b,sizeof(int) * (1 << n));
+}
+signed main()
+{
+    ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+    cin >> n;
+    int len = 1 << n;
+    for(int i = 0;i < len;i++)
+        cin >> a[i];
+    for(int i = 0;i < len;i++)
+        cin >> b[i];
+    init();
+    FWT::Or(len,A,1),FWT::Or(len,B,1);
+    for(int i = 0; i < len;i++)
+        A[i] = A[i] * B[i] % MOD;
+    FWT::Or(len,A,998244352);
+    for(int i = 0;i < len;i++)
+        cout << A[i] % MOD << " \n"[i == len - 1];
+    init();
+    FWT::And(len,A,1),FWT::And(len,B,1);
+    for(int i = 0; i < len;i++)
+        A[i] = A[i] * B[i] % MOD;
+    FWT::And(len,A,998244352);
+    for(int i = 0;i < len;i++)
+        cout << A[i] % MOD << " \n"[i == len - 1];
+    init();
+    FWT::Xor(len,A,1),FWT::Xor(len,B,1);
+    for(int i = 0; i < len;i++)
+        A[i] = A[i] * B[i] % MOD;
+    FWT::Xor(len,A,499122177);
+    for(int i = 0;i < len;i++)
+        cout << A[i] % MOD << " \n"[i == len - 1];
+}
+```
+
+</Collapse>
+
+例题可以看第一道，维护最大值与次大值，改下或卷积的板子就好。

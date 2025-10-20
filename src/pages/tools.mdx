@@ -1,0 +1,27 @@
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import MainCard from "@/components/MainCard.astro";
+
+<BaseLayout title="Tools">
+  <MainCard
+    title="Tools"
+    description="下面有些自己用的小东西"
+    textOverlay="TOOLS"
+    infoIcon="lucide:calculator"
+  >
+  后面有非数字字符会自动截断，所以不要用科学计数法
+
+    计算模意义下的乘法逆元：
+    <input class = "InputInput" type = "number" id = "Invinputer" placeholder = "输入你要求逆元的数" /> <input class = "InputInput" id = "InvinputerMod" placeholder = "输入模数" value = "998244353" /> <br/>
+    <input id = "InvAnsDisplayer" placeholder = "答案会显示在这里" readonly = "readonly" />
+
+    计算 $\varphi$ 的值： 
+    <input class = "InputInput" type = "number" id = "Phiinputer" placeholder = "输入你要求欧拉函数的数" /><br/>
+    <input id = "PhiAnsDisplayer" placeholder = "答案会显示在这里" readonly = "readonly" />
+
+    判断是否为质数：
+    <input class = "InputInput" type = "number" id = "PrimeInputer" placeholder = "输入要判断的数" /><br />
+    <input id = "PrimeAnsDisplayer" placeholder = "结果会显示在这里" readonly = "readonly" />
+  </MainCard>
+</BaseLayout>
+
+<script type = "text/javascript" src = "/Tools.js" />

@@ -1,0 +1,200 @@
+---
+title: 数据结构Part 4
+description: 字典树
+pubDate: 2025-2-26
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+    - 数据结构
+    - 字符串
+---
+
+说是字符串的，其实单独用一般不会拿来维护字符串，用于字符串的大多是 ACAM。
+
+## 0.结构
+
+顾名思义，字典树肯定是一棵树。除根节点外每个节点存储的是一个字符（或者在边上存，点上不存），从根节点到任意一点的路径就是一个字符串。
+
+大概长这样：
+
+![From oi-wiki.org](https://oi-wiki.org/string/images/trie1.png)
+
+一般会对每个节点记录是否是一个字符串的结尾。
+
+## 1.应用
+
+### 检索字符串
+
+我们从根节点一路往下走，如果没有需要的下一个字符，就返回没找到。如果找到了最后，就返回是否是结尾。
+
+### 01-Trie
+
+就是字符集只有 $0,1$ 的字典树，可以维护和异或有关的信息。
+
+#### [Eg. 最长异或路径](https://www.luogu.com.cn/problem/P4551)：维护异或极值
+
+我们可以把路径 $(u,v)$ 的查询拆成 $(root,u) \oplus (root,v)$，同时记录异或前缀和。
+
+先把所有异或前缀和插入到字典树中，查询 $x$ 的某一位时，采取贪心的策略，优先选相反的节点，然后向下递归。
+
+#### 维护异或和
+
+##### 插入 & 删除
+
+一般是从低位向高位维护。
+
+维护异或和，我们需要知道的是每一位上的奇偶性，为此，我们维护以下几个值：
+
+- $w$ 表示到父亲这条边的权值（的奇偶性）
+- $val$ 表示子树异或和。
+
+我们可以采用 DS 的一贯手法：`pushup`。
+
+具体如下：我们将 $w$ 更新为两儿子的 $w$ 的和，$val \gets 2val _ {0} \oplus (2val _ {1} \operatorname{or} (w _ {1} \operatorname{and} 1)) $。
+
+写成代码是这样的：
+
+```cpp
+#define son(rt,v) tree[rt].ch[v]
+inline void pushup(int rt)
+{
+    tree[rt].w = tree[rt].val = 0;
+    if(son(rt,0))
+    {
+        tree[rt].w += tree[son(rt,0)].w;
+        tree[rt].val ^= (tree[son(rt,0)].val << 1);
+    }
+    if(son(rt,1))
+    {
+        tree[rt].w += tree[son(rt,1)].w;
+        tree[rt].val ^= (tree[son(rt,1)].val << 1) & (tree[son(rt,1)].w & 1)
+    }
+}
+```
+
+按插入值的每一位向下走，走到最后让 $w$ 自增，回溯的时候 `pushup` 上来，删除就让 $w$ 自减。注意限制 Trie 的高度。
+
+```cpp
+inline void insert(int &rt,int x,int dep)
+{
+    if(!rt)
+        rt = newNode();
+    if(dep > MXDP)
+    {
+        ++tree[rt].w;
+        return ;
+    }
+    insert(son(rt,x & 1),x >> 1,dep + 1);
+    pushup(rt);
+}
+inline void remove(int rt,int x,int dep)
+{
+    if(dep > MXDP)
+    {
+        --tree[rt].w;
+        return ;
+    }
+    remove(son(rt,x & 1),x >> 1,dep + 1);
+    pushup(rt);
+}
+```
+
+##### 全局加一
+
+我们思考二进制下的加一过程：
+
+我们找到最低的 $0$，然后把它变成 $1$，再将后面的 $1$ 全部变成 $0$。
+
+放到 Trie 上，就是交换两儿子，顺着**交换后的** $0$ 向下递归。
+
+```cpp
+inline void add(int rt)
+{
+    swap(son(rt,0),son(rt,1));
+    if(son(rt,0))
+        add(son(rt,0));
+    pushup(rt);
+}
+```
+
+#### 进阶操作
+
+我们可以在把 $w$ 看作出现次数，这样，我们就可以做一些更神奇的操作。
+
+##### Trie 合并
+
+类似线段树合并，传入两个节点 $L,R$，若有至少一个为 $0$ 则返回另一个。
+
+否则，合并两个节点的信息，随后向下递归。
+
+```cpp
+inline int merge(int L,int R)
+{
+    if(!L || !R)
+        return L | R;
+    tree[L].w += tree[R].w;
+    tree[L].val ^= tree[R].val;
+    son(L,0) = merge(son(L,0),son(R,0));
+    son(L,1) = merge(son(L,1),son(R,1));
+    return L;
+}
+```
+
+##### 可持久化 Trie
+
+类似主席树，我们每次记录修改的一条链，然后更新根节点。
+
+下面是可以支持查询区间异或最大值的可持久化 Trie。
+
+```cpp
+struct Buer
+{
+    int val,ch[2];
+}tree[MAXN * 50];
+#define son(rt,v) tree[(rt)].ch[(v)]
+int root[MAXN],cnt;
+inline void insert(int rt,int o,int val)
+{
+    for(int i = U;i >= 0;--i)
+    {
+        tree[rt].val = tree[o].val + 1;
+        if(val & (1 << i))
+        {
+            if(!son(rt,1))
+                son(rt,1) = ++cnt;
+            son(rt,0) = son(o,0);
+            rt = son(rt,1),o = son(o,1);
+        }
+        else
+        {
+            if(!son(rt,0))
+                son(rt,0) = ++cnt;
+            son(rt,1) = son(o,1);
+            rt = son(rt,0),o = son(o,0);
+        }
+    }
+    tree[rt].val = tree[o].val + 1;
+}
+// root[i] = ++cnt,insert(root[i],root[i - 1],val);
+inline int query(int u,int v,int val)
+{
+    int res = 0;
+    for(int i = U;i >= 0;--i)
+    {
+        bool t = (val & (1 << i));
+        if(tree[son(v,!t)].val - tree[son(u,!t)].val)
+        {
+            res += (1 << i);
+            u = son(u,!t),v = son(v,!t);
+        }
+        else
+            u = son(u,t),v = son(v,t);
+    }
+    return res;
+}
+```
+
+## 结尾
+
+用在 DS 方面的就差不多了，放在字符串里面，还可以拿来跑 ACAM，或者构建后缀字典树解决其他问题。

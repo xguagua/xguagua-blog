@@ -1,0 +1,239 @@
+---
+title: 集训汇总
+description: 懒得写
+pubDate: 2025-7-25
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+    - 数据结构
+    - 图论
+    - 数学
+    - DP
+    - DP 优化
+---
+
+import Collapse from "../../components/mdx/Collapse.astro";
+
+学到了 + 恶补了一车东西，写这里。
+
+## 树相关
+
+本质都是对某个节点按某种规则分出重儿子
+
+### 重链剖分 & DSU On Tree
+
+#### 重链剖分
+
+性质是任意一条路径上只有 $\Omicron(\log n)$ 条轻边，也就是说只和 $\Omicron(\log n)$ 条重链相关。
+
+本质上是一种链分治，所以对于某些问题可以分重儿子和轻儿子分类讨论后合并信息。
+
+#### DSU On Tree（树上启发式合并）
+
+每个节点的轻子树的大小和是 $\Omicron(n \log n)$ 的，所以对于某些和子树大小相关的问题，可以考虑继承重儿子的信息后加上自己的，随后合并轻儿子。
+
+实现上可以考虑开一个内存池，然后 DP 数组保存指针。
+
+小的往大的和，启发式没错了（
+
+两个合称静态链分治。
+
+### 动态 DP
+
+下文中 $\text{son}(u)$ 表示 $u$ 的所有儿子，$\text{LSon}(u)$ 表示 $u$ 的所有轻儿子,$\text{HSon}(u)$ 表示 $u$ 的重儿子。
+
+来解决一些会修改点权的简单树上问题，下面拿动态点权树上最大独立集为例。
+
+首先朴素 DP 长这样子：$\begin{cases} dp _ {u,0} \gets \sum \limits _ {v \in \text{son}(u)}\max \{dp _ {v,0},dp _ {v,1}\} \\ dp _ {u,1} \gets a _ u + \sum \limits _ {v \in \text{son}(u)} dp _ {v,0}\end{cases}$
+
+如果我们修改点权暴力做，显然需要更新那个点所有祖先的 $dp$ 值，最劣单次 $\Omicron(n)$。
+
+我们想，既然是对链操作，那我们为什么不能拿树剖来做呢？但是树剖只能剖出链，维护还得用其他方式，所以我们考虑数据结构维护。
+
+首先一般数据结构维护的是半群信息，得有结合律，所以我们用矩阵维护 $dp$ 数组，使其具有结合律，然后用线段树维护。
+
+但是一个点不只有重儿子，所以我们定义 $g _ {u,0/1}$ 表示不选/选 $u$ 的轻儿子信息并，则 $\begin{cases} g _ {u,0} \gets \sum \limits _ {v \in \text{LSon}(u)} \max\{dp _ {v,0},dp _ {v,1}\} \\ g _ {u,1} \gets a _ u + \sum \limits _ {v \in \text{LSon(u)}} dp _ {v,0} \end{cases}$
+
+所以修改后，有 $\begin{cases} dp _ {u,0} = \max \{dp _ {\text{HSon(u),0}},dp _ {\text{HSon}(u),1} \} + g _ {u,0} \\ dp _ {u,1} = dp _ {\text{HSon(u),0}} + g _{u,1}  \end{cases}$
+
+然后放到矩阵上来，$\max$ 对 $+$ 有分配律，所以 $(\max,+)$ 矩阵乘法是有结合律的。
+
+我们的 DP 顺序是由深到浅，对应 DFN 是由大到小，所以 $dp$ 的矩阵应该放在右边，所以矩阵为 $\begin{bmatrix} dp _ {u,0} \\ dp _ {u,1} \end{bmatrix}$，自行推导出转移矩阵为 $\begin{bmatrix} g _ {u,0} & g _ {u,0} \\ g _ {u,1} & -\infty \end{bmatrix}$。
+
+考虑修改，我们修改一个点的点权，只会影响到它到根路径上的所有轻边，轻边数量由重剖的性质可得是 $\Omicron(\log n)$ 的，带上线段树的复杂度单次是 $\Omicron(\log ^ 2 n)$ 的。
+
+还有一种直接对重链建二叉树的全局平衡二叉树写法，但我不会。
+
+<Collapse title = "实现">
+
+```cpp
+#include <bits/extc++.h>
+using namespace std;
+#define int long long 
+
+constexpr int MAXN = 1e5 + 5,inf = 0x3f3f3f3f3f3f3f3f;
+int n,m,a[MAXN];
+vector<int> g[MAXN];
+struct Matrix
+{
+    int val[3][3];
+    Matrix()
+    {memset(val,~0x3f,sizeof(val));}
+    Matrix operator*(Matrix rhs) 
+    {
+        Matrix res;
+        for(int i = 1;i <= 2;i++)
+        {
+            for(int k = 1;k <= 2;k++)
+            {
+                for(int j = 1;j <= 2;j++)
+                    res.val[i][j] = max(res.val[i][j],val[i][k] + rhs.val[k][j]);
+            }
+        }
+        return res;
+    }
+}tree[MAXN << 2],val[MAXN];
+int f[MAXN],dep[MAXN],sz[MAXN],top[MAXN],son[MAXN],dfn[MAXN],id[MAXN],timer,dp[MAXN][2],ed[MAXN];
+inline void dfs1(int u,int fa)
+{
+    f[u] = fa,dep[u] = dep[fa] + 1,sz[u] = 1;
+    for(int v : g[u])
+    {
+        if(v == fa)
+            continue;
+        dfs1(v,u);
+        // 计算 dp 的值
+        sz[u] += sz[v];
+        if(sz[son[u]] < sz[v])
+            son[u] = v;
+    }
+}
+inline void dfs2(int u,int tp)
+{
+    dfn[u] = ++timer,id[timer] = u;
+    top[u] = tp,ed[tp] = timer;
+    // 给 g 赋初始值，直接存进矩阵
+    if(!son[u])
+        return ;
+    dfs2(son[u],tp);
+    for(int v : g[u])
+    {
+        if(v == f[u] || v == son[u])
+            continue;
+        dfs2(v,v);
+        // 计算 g 的值
+    }
+}
+inline void pushup(int rt)
+{tree[rt] = tree[rt << 1] * tree[rt << 1 | 1];}
+inline void build(int rt,int l,int r)
+{
+    if(l == r)
+    {
+        tree[rt] = val[id[l]];
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    build(rt << 1,l,mid),build(rt << 1 | 1,mid + 1,r);
+    pushup(rt);
+}
+inline void modify(int rt,int l,int r,int pos)
+{
+    if(l == r)
+    {
+        tree[rt] = val[id[l]];
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    if(pos <= mid)
+        modify(rt << 1,l,mid,pos);
+    else
+        modify(rt << 1 | 1,mid + 1,r,pos);
+    pushup(rt);
+}
+inline Matrix query(int rt,int l,int r,int L,int R)
+{
+    if(L <= l && R >= r)
+        return tree[rt];
+    int mid = (l + r) >> 1;
+    if(R <= mid)
+        return query(rt << 1,l,mid,L,R);
+    if(L > mid)
+        return query(rt << 1 | 1,mid + 1,r,L,R);
+    return query(rt << 1,l,mid,L,R) * query(rt << 1 | 1,mid + 1,r,L,R);
+}
+inline void Pmodify(int u,int w)
+{
+    // 更新那个点的信息，先改 val 矩阵
+    Matrix pre,cur;
+    while(u)
+    {
+        pre = query(1,1,n,dfn[top[u]],ed[top[u]]); // 这条链改之前的矩阵
+        modify(1,1,n,dfn[u]); // 线段树上同步
+        cur = query(1,1,n,dfn[top[u]],ed[top[u]]); // 改之后的
+        u = f[top[u]];
+        // 把之前的减掉再加上新的来更新链顶的点的矩阵
+    }
+}
+```
+
+</Collapse>
+
+### 长链剖分
+
+重儿子是到叶子节点的路径最长的儿子，性质是任意一条边上有 $\Omicron(\sqrt{n})$ 条轻边。
+
+应用没有重剖多，有两个应用：求 $k$ 级祖先和优化 DP。
+
+求 $k$ 级祖先没什么用，跑不过重剖，主要应用是优化 DP。
+
+上面 DSU On Tree 是来优化和子树大小有关的问题，而长剖是用来优化和深度有关的问题的。
+
+#### [Eg. CF1009F Dominant Indices](https://codeforces.com/problemset/problem/1009/F)
+
+我们考虑在 $u$ 子树中与 $u$ 的距离为 $d$ 的怎么算，考虑 DP，则 $dp _ {u,d} = \sum _ {v \in \text{Son}(u)} dp _ {v,d - 1}$，显然会炸。
+
+考虑优化，这个和深度有关，考虑长剖。先给 $dp _ {u,0}$ 设为 $1$，然后把重儿子的 $dp$ 指向 $dp _ u$ 的下一个再进行递归，这样就可以直接继承重儿子了，轻儿子暴力做就行。
+
+然后答案先设为长链长度，然后合并轻儿子时更新。
+
+## DP 相关
+
+### 动态 DP
+
+写上面了。
+
+### DP 套 DP
+
+某些最优化/可行性 DP 可以被看作是一个 DFA，所以 DP 套 DP 的实质是 DFA 上的 DP，所以你可以以理解 ACAM DP 的方式来理解这个东西。
+
+内层 DP 的结果就是 DFA 的状态，所以外层 DP 的状态会与内层 DP 的结果有关。
+
+考虑外层 DP 的时候，我们要能把内层 DP 整个表示出来，所以可能需要记一些和内层 DP 转移相关的东西。
+
+然后一般不会直接让你过的，所以你可能需要观察一些性质。
+
+### 凸优化
+
+#### WQS 二分
+
+在答案有凸性的时候用来优化类似“恰好 k 段”的问题。
+
+因为答案有凸性，所以一开始，我们的选择会让答案最优，但是到后面，我们的选择就会让答案更劣，所以一定有最优的决策点。
+
+而又由于凸性，斜率是有单调性的，这启发我们二分这个斜率去切凸包，找到这个最优的斜率。
+
+假设我们二分的斜率为 $k$，最优的与凸壳的切点为 $(x,g(x))$，则截距 $b = g(x) - kx$ 也是最大的。
+
+而 $-kx$ 可以认为是每个点都加上了 $kx$ 的惩罚，我们事先给每个点附上惩罚之后就可以转化为不带限制的问题了，进而就可以求出最优决策点了。
+
+WQS 二分的重点其实是证明原式有凸性，这个可以用 $\forall x,F(x - 1) - F(x) \le F(x) - F(x + 1)$ 来证明，~~也可以瞪眼法非严格快速得出结论。~~
+
+#### Slope Trick
+
+分析函数的凸性可能可以做到更好的复杂度。
+
+因为斜率/拐点是有序的，通过分析性质，我们可以用堆或者平衡树维护斜率/拐点来表示出这个凸壳，就可以求出答案了。
+
+应该 也许 可能 没了吧？

@@ -1,0 +1,181 @@
+---
+title: 莫比乌斯反演
+description: 莫比乌斯反演
+pubDate: 2025-6-27
+categories:
+    - 大数学照亮世界
+tags:
+    - 数学
+    - 数论
+---
+
+import Collapse from "../../components/mdx/Collapse.astro";
+
+## 0. 前置知识
+
+### 数论分块
+
+~~我绝对不会说是我发现我没写数论分块~~
+
+这个是用来求解形如 $\sum _ {d = 1} ^ n f(\lfloor \frac{n}{d} \rfloor)$ 的式子的，可以拓展到高维。
+
+我们可以先算一些比较小的 $\lfloor \frac{n}{d} \rfloor$ 的值，以 $n = 7$ 为例：
+
+| $d$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ | $7$ |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| $\frac{n}{d}$ | $7$ | $3$ | $2$ | $1$ | $1$ | $1$ | $1$ |
+
+我们发现，很多 $\lfloor \frac{n}{d} \rfloor$ 都是相同的，这启发我们直接对 $\lfloor \frac{n}{d} \rfloor$ 相同的一段区间计算答案。
+
+我们先给出结论，对于一个左端点 $l$，区间 $[l,\lfloor \frac{n}{\lfloor \frac{n}{l} \rfloor} \rfloor]$ 的 $\lfloor \frac{n}{d} \rfloor$ 的值都是相同的。
+
+<Collapse title = "证明">
+
+我们要求的等同于：已知 $l$，求 最大的 $r$，满足 $\lfloor \frac{n}{l} \rfloor = \lfloor \frac{n}{r} \rfloor$。
+
+设 $r = l + d,k = \lfloor \frac{n}{l} \rfloor$，则 $lk + p = (l + d)k + q = n,p,q \in [0,l)$，移项得到 $dk = p - q$，显然 $r$ 取最大值时，$d$ 也取最大值，又因为 $q \in [0,l)$，所以 $d _ {\max} = \lfloor \frac{p}{k} \rfloor$。
+
+因此有：
+
+$$
+\begin{aligned}
+r &= l + \lfloor \frac{p}{k} \rfloor \\
+&= l + \lfloor \frac{n - l\lfloor \frac{n}{l} \rfloor}{\lfloor \frac{n}{l} \rfloor} \rfloor \\
+&= \lfloor \frac{n - l\lfloor \frac{n}{l} \rfloor + l\lfloor \frac{n}{l} \rfloor}{\lfloor \frac{n}{l} \rfloor} \rfloor \\
+&= \lfloor \frac{n}{\lfloor \frac{n}{l} \rfloor} \rfloor
+\end{aligned}
+$$
+</Collapse>
+
+然后就是复杂度了，我们给出结论，$\lfloor \frac{n}{d} \rfloor$ 的个数是 $\Omicron(\sqrt{n})$ 的，整除分块的复杂度也是 $\Omicron(\sqrt{n})$ 的。
+
+<Collapse title = "证明">
+我们分情况讨论：
+
+- $d \le \sqrt{n}$：$\lfloor \frac{n}{d} \rfloor$ 的数量上界显然是 $\sqrt{n}$
+- $d \gt \sqrt{n}$：则 $\lfloor \frac{n}{d} \rfloor \lt \sqrt{n}$，数量上界显然是 $\sqrt{n}$
+
+综上，$\lfloor \frac{n}{d} \rfloor$ 的个数是 $\Omicron(\sqrt{n})$ 的。
+</Collapse>
+
+#### 高维的情况
+
+即求 $\sum _ {d = 1} ^ n f(\lfloor \frac{n}{d} \rfloor) g(\lfloor \frac{m}{d} \rfloor)$ 的值，则我们右端点就应该是最靠近左端点的那个，即 $r = \min \{ \lfloor \frac{n}{\lfloor \frac{n}{l} \rfloor} \rfloor,\lfloor \frac{m}{\lfloor \frac{m}{l} \rfloor} \rfloor \}$。
+
+## 1. 莫比乌斯函数
+
+我们定义莫比乌斯函数如下： $\mu(x) = \begin{cases} 1,x = 1 \\ 0,d ^ 2 \mid x \\ (-1) ^ k,k \text{ 表示 } x \text{ 的不同质因子个数} \end{cases}$
+
+莫比乌斯函数是个积性函数，所以可以线性筛：
+
+```cpp
+inline void Sieve(int n)
+{
+    mu[1] = 1; // 定义
+    for(int i = 2;i <= n;i++)
+    {
+        if(!vis[i])
+            prime[++top] = i,mu[i] = -1; // 这个数是质数，按照定义，函数值为 -1
+        for(int j = 1;j <= top && i * prime[j] <= n;j++)
+        {
+            vis[i * prime[j]] = 1;
+            if(i % prime[j] == 0) // 含有平方因子，函数值为 0
+                break;
+            mu[i * prime[j]] = -mu[i]; // 多了一个质因子，符号相反
+        }
+    }
+}
+```
+
+我们给出一个关于莫比乌斯函数的重要结论：$\sum \limits _ {d \mid n} \mu(d) = [n = 1] $。
+
+<Collapse title = "证明">
+
+我们设 $n = \prod p _ i ^ {a _ i},m = \prod p _ i$。则我们枚举 $n$ 的因子与枚举 $m$ 的因子的区别就在于没有枚举含平方因子的因子，而这些因子的莫比乌斯函数值显然为 $0$。
+
+因此，有 $\sum \limits _ {d \mid n} \mu (d) = \sum \limits _ {d \mid m} \mu (d)$，而求后者的值我们可以直接选取一些质因子来求莫比乌斯函数值，即 $\sum \limits _ {d \mid m} \mu (d) = \sum _ {i = 0} ^ k C _ k ^ i (-1) ^ i$。
+
+我们将 $x = -1,y = 1$ 代入二项式定理，得 $(-1 + 1) ^ k = \sum \limits _ {i = 0} ^ k C _ k ^ i (-1) ^ i 1 ^ {k - i}$，则当且仅当 $k = 0$ 时，该式值为 $1$，而没有质因子的数只有 $1$，因此 $\sum \limits _ {d \mid n} \mu (d) = [n = 1]$。
+
+</Collapse>
+
+有了这一条结论，我们就能解决一些之前解决不了的问题。
+
+### [Eg. 1 ZAP-Queries](https://www.luogu.com.cn/problem/P3455)
+
+注：下面写的 $n,m$ 对应原题目中的 $a,b$，且默认 $n \le m$。
+
+我们更换枚举对象，相当于现在的 $i,j$ 枚举的是 $d$ 的倍数，则原式等于 $\sum \limits _ {i = 1} ^ {\lfloor \frac{n}{d} \rfloor} \sum \limits _ {j = 1} ^ {\lfloor \frac{m}{d} \rfloor} [\gcd(i,j) = 1]$。
+
+我们套用反演结论，则原式等于 $\sum \limits _ {i = 1} ^ {\lfloor \frac{n}{d} \rfloor} \sum \limits _ {j = 1} ^ {\lfloor \frac{m}{d} \rfloor} \sum \limits _ {x \mid \gcd(i,j)} \mu (x) = \sum \limits _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor} \mu (x) \sum \limits _ {i = 1} ^ {\lfloor \frac{n}{d} \rfloor} [x \mid i] \sum \limits _ {j = 1} ^ {\lfloor \frac{m}{d} \rfloor} [x \mid j]$。
+
+我们再次更换枚举对象，枚举 $dx$ 的倍数，则原式等于 $\sum \limits _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor} \mu (x) \sum \limits _ {i = 1} ^ {\lfloor \frac{n}{dx} \rfloor} 1 \sum \limits _ {j = 1} ^ {\lfloor \frac{m}{dx} \rfloor} 1 = \sum \limits _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor} \mu (x) \lfloor \frac{n}{dx} \rfloor \lfloor \frac{m}{dx} \rfloor $
+
+这个时候我们就可以直接数论分块来求出这个式子的值了。
+
+## 2. 莫比乌斯反演
+
+其实就是一种另类的拿来去重的方法。
+
+我们先给出一些定义：
+
+- 数论函数：满足 $f$ 的定义域为 $\N _ +$ 的函数。
+- 狄利克雷卷积： 两个数论函数 $f,g$ 的狄利克雷卷积定义为 $(f \ast g)(n) = \sum \limits _ {d \mid n} f(n)g(\frac{n}{d})$。
+
+显然，狄利克雷卷积有交换律，结合律。
+
+知道就行了，详细讲解等我学了杜教筛再说。
+
+我们上文得到了一个关于莫比乌斯函数的结论 $\sum \limits _ {d \mid n} \mu (d) = [n = 1]$，如果我们把 $[n = 1]$ 看作 $\epsilon(n)$，则我们有 $\epsilon = \mu \ast \mathbf{1}$。
+
+假设我们要求一个函数 $f$，满足 $g(n) = \sum \limits _ {d \mid n} f(d)$，并且我们可以求出 $g$，则我们可以将原式看作 $g = f \ast \mathbf{1}$，两边同时卷积上 $\mu$，得 $f \ast \mathbf{1} \ast \mu = g \ast \mu \Rightarrow f = g \ast \mu \Rightarrow f(n) = \sum \limits _ {d \mid n} g(d) \mu (\frac{n}{d})$。
+
+反演结论： $g(n) = \sum \limits _ {d \mid n} f(d) \Leftrightarrow f(n) = \sum \limits _ {d \mid n} g(d) \mu(\frac{n}{d})$。
+
+## 3. Tricks
+
+其实莫比乌斯反演不怎么多，多的还是莫比乌斯函数的应用。
+
+### (1) 改变枚举对象
+
+像上面的那道例题一样，我们在不好满足 $[\gcd(i,j) = d]$ 时，可以强制让 $i,j$ 满足 $d \mid i \wedge d \mid j$，也就是直接枚举 $di,dj$
+
+### (2) 先枚举再判断
+
+还是上面那道例题，我们因为不好处理 $x \mid \gcd(i,j)$，所以我们先枚举 $x$，然后再让 $i,j$ 满足 $x \mid i \wedge x \mid j$。
+
+类似的，我们可以用这种方法解决 $\gcd$ 在分母的情况。
+
+#### [Eg. 2 Crash的数字表格](https://www.luogu.com.cn/problem/P1829)
+
+默认 $n \le m$。
+
+我们先把原式化为 $\sum \limits _ {i = 1} ^ n \sum \limits _ {j = 1} ^ m \frac{ij}{\gcd(i,j)}$，这个时候，我们在最外层枚举一个 $d$，并且判断 $d$ 是否等于 $\gcd(i,j)$，则原式转化为 $\sum \limits _ {d = 1} ^ n \sum \limits _ {i = 1} ^ n \sum \limits _ {j = 1} ^ m [\gcd(i,j) = d]\frac{ij}{d}$。
+
+用上一条 Trick，原式等于 $\sum \limits _ {d = 1} ^ n \sum \limits _ {i = 1} ^ {\lfloor \frac{n}{d} \rfloor} \sum \limits _ {j = 1} ^ {\lfloor \frac{m}{d} \rfloor} [\gcd(i,j) = 1]dij$
+
+莫比乌斯函数展开，得 $\sum \limits _ {d = 1} ^ {n} d \sum \limits _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor} \mu (x)x ^ 2 (\sum \limits _ {i = 1} ^ {\lfloor \frac{n}{dx} \rfloor} i) (\sum \limits _ {j = 1} ^ {\lfloor \frac{m}{dx} \rfloor} j)$，筛出 $\mu(x) x ^ 2$ 后就可以数论分块了。
+
+### (3) 从函数性质入手
+
+比如 [DZY loves math VIII](https://www.luogu.com.cn/problem/T620314)，我们发现，若 $\gcd(i,j) \neq 1$，那一定会有平方因子，没有贡献。
+
+### (4) 直接枚举积
+
+~~原谅我跟没有一样的语文~~
+
+根据我们上面的经验，最后可能会是一个包含 $\lfloor \frac{n}{dx} \rfloor$ 的式子，而在有些情况这个很不好处理，这个时候，我们就可以令 $T = dx$，然后枚举 $T$。
+
+#### [Eg. 3 数字表格](https://www.luogu.com.cn/problem/P3704)
+
+同样默认 $n \le m$。
+
+我们先转化一下，转为 $\prod \limits _ {d = 1} ^ n f _ d ^ {\sum \limits _ {i = 1} ^ n \sum \limits _ {j = 1} ^ m [\gcd(i,j) = d]}$。
+
+上面那个式子就是 Eg. 1，算出来是 $\prod \limits _ {d = 1} ^ {n} f _ d ^ {\sum \limits _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor}\mu(x) \lfloor \frac{n}{dx} \rfloor \lfloor \frac{m}{dx} \rfloor }$。
+
+这个时候，我们设 $T = dx$，并且直接枚举 $T$，则原式就转化为 $\prod \limits _ {T = 1} ^ n (\prod \limits _ {d \mid T} f _ d ^ {\mu (\frac{T}{d})}) ^ {\lfloor \frac{n}{T} \rfloor \lfloor \frac{m}{T} \rfloor}$，记 $F(n) = \prod \limits _ {d \mid n} f _ d ^ {\mu (\frac{n}{d})}$，枚举因子再枚举倍数就在 $\Omicron(n \ln n)$ 的复杂度内算出每一个 $F(n)$ 的值，然后就能数论分块了。
+
+## 4. 总结
+
+我觉得莫比乌斯反演的题都挺 Tricky 的，反正多练多见就行了。

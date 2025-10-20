@@ -52,7 +52,10 @@ const { bgClass, iconName, borderClass } = typeConfig[type];
           }
         </div>
       </div>
-      <h3 class="font-bold text-center">{name}</h3>
+      <div class = "flex justify-center items-baseline">
+        <h3 class="font-bold" style = "color: black;">{name.charAt(0)}</h3>
+        <h3 class="font-bold text-center" style = "color: red;">{name.substring(1)}</h3>
+      </div>
       <div class="divider my-1"></div>
       <p class="text-sm text-center text-base-content/70 line-clamp-2 leading-normal h-[3em]">{description}</p>
     </div>

@@ -1,0 +1,88 @@
+---
+title: 二项式反演与容斥原理
+description: 二项式反演与容斥原理证明
+pubDate: 2024-12-23
+categories:
+    - 大数学照亮世界
+tags:
+    - 数学
+    - 组合数学
+---
+
+import Collapse from "../../components/mdx/Collapse.astro";
+
+## 0.二项式反演
+
+~~鬼知道发现它的人怎么分析出来的~~
+
+直接记结论吧。
+
+$$
+f _ n = \sum _ {i = 0} ^ n C _ n ^ i g _ i \Leftrightarrow g _ n = \sum _ {i = 0} ^ n (-1) ^ {n - i} C _ n ^ i f _ i
+$$
+
+还有个更通用的结论
+
+$$
+f _ n = \sum _ {k = n} ^ m C _ k ^ n g _ k \Leftrightarrow g _ n = \sum _ {k = n} ^ m (-1) ^ {k - n} C _ k ^ n f _ k
+$$
+
+<Collapse title = "证明">
+
+$$
+\begin {aligned}
+g _ n &= \sum _ {i = 0} ^ n (-1) ^ {n - i} C _ n ^ i\sum _ {j = 0} ^ iC _ i ^ j g _ j
+&= \sum _ {i = 0} ^ n (-1) ^ {n - i} \sum _ {j = 0} ^ i C _ n ^ i C _ i ^ j g _ j
+&= \sum _ {i = 0} ^ n \sum _ {j = 0} ^ i (-1) ^ {n - i} C _ n ^ j C _ {n - i} ^ {n - j} g _ j\\
+&= \sum _ {j = 0} ^ n C _ n ^ j g _ j\sum _ {i = 0} ^ {n - j} (-1) ^ i C _ {n - j} ^ i
+&= \sum _ {j = 0} ^ n C _ n ^ j g _ j [n - j = 0]
+\end {aligned}
+$$
+
+所以，当且仅当 $j = n$ 时，$C _ n ^ j g _ j[j = n] \neq 0 = g _ n$，得证。 
+</Collapse>
+
+## 1.容斥原理
+
+$$
+| \bigcup _ {i = 1} ^ n S _ i| = \sum _ {i = 1} ^ n (-1) ^ {i + 1} \sum _ {|T| = i}|\bigcap _ {S \in T} S|
+$$
+
+<Collapse title = "证明">
+
+采用数学归纳法，当 $n=1$ 时，原式显然成立。当 $n = 2$ 时，可以通过 Venn 图得出 $|S _ 1 \cup S _ 2| = |S _ 1| + |S _ 2| + |S _ 1 \cap S _ 2| $
+
+又因为 $\cup$ 和 $\cap$ 均有结合律，且互相有分配律。
+
+所以有:
+
+$$
+S _ 4 \gets S _ 1 \cup S _ 2,|S _ 4| = |S _ 1| + |S _ 2| + |S _ 1 \cap S _ 2|
+S _ 1 \cup S _ 2 \cup S _ 3 = S _ 4 \cup S _ 3
+\begin{aligned}
+|S _ 1 \cup S _ 2 \cup S _ 3| &= |S _ 4| + |S _ 3| + |S _ 4 \cap S _ 3| &= |S _ 1| + |S _ 2| - |S _ 1 \cap S _ 2| + |(S _ 1 \cap S _ 3) \cup (S _ 2 \cap S _ 2)| &= |S _ 1| + |S _ 2| + |S _ 3| - |S _ 1 \cap S _ 2| - |S _ 2 \cap S _ 3| - |S _ 1 \cap S _ 3|   &+ |S _ 1 \cap S _ 2 \cap S _ 3|
+\end{aligned}
+$$
+
+所以，$n = 1,2,3$ 时，结论成立，进而可以归纳出$\forall n \ge 1$，结论均成立。
+</Collapse>
+
+## 2.习题
+
+### [P10986 2023](https://www.luogu.com.cn/problem/P10986)
+
+知识点：容斥原理
+
+首先，可以想到把 $2023$ 看作一个数，这样，方案数就是 $10 ^ {n - 4m} \times C _ {n - 3m} ^ m$，不是板中板吗？一交，10pts。
+
+为什么呢？因为剩下随便乱填的数是 **可以凑出** $2023$ 的，方案数可能会多。
+
+然后，我们可以把这个“恰好”给改成“至少”，就非常好做。
+
+设 $ g(x) $ 表示恰好有 $x$ 个 $2023$ 的方案数，$ f(x) $ 为至少有 $x$ 个 $2023$ 的方案数。则 $ f(x) = \sum _ {i = x} ^ {\frac{n}{4}} C _ i ^ x g(i) = C _ {n - 3x} ^ x \times 10 ^ {n - 4x}$，意思是从 $i$ 个中选择 $x$ 个，使这些为 $2023$，并且最大只有 $\frac{n}{4}$ 个。
+
+然后这个就是上面的二项式反演的第二种形式，那直接丢反演，得到 $ g(x) = \sum _ {i = x} ^ n (-1) ^ {i - x}  C _ i ^ x f(i) $，则 $ g(m) = \sum _ {i = m} ^ {\frac{n}{4}} (-1) ^ {i - m} C _ i ^ m f(i) = \sum _ {i = m} ^ {\frac{n}{4}} (-1) ^ {i - m} C _ i ^ m  10 ^ {n - 4m} C _ {n - 3m} ^ m $，就 AC 了。
+
+## 3.总结
+
+我觉得这个东西难就难在可以和 DP 深度融合，~~我最差的就是 DP~~，其实有些在 **恰好** 与 **至少/之多** 之间转换的可以用子集反演来做，但是这就不是这篇该讲的了。

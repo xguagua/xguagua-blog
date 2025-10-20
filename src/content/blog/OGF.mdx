@@ -1,0 +1,71 @@
+---
+title: 普通生成函数
+description: OGF
+pubDate: 2024-12-27
+categories:
+    - 算法学习笔记
+    - 大数学照亮世界
+tags:
+    - OI
+    - 数学
+    - 组合数学
+    - 多项式
+---
+
+我太菜了，所以这里只讲 OGF。
+
+# 0.定义
+
+定义序列 $\langle a _ n \rangle$ 的普通生成函数为形式幂级数 $\sum _ {n \ge 0} a _ n x ^ n$。
+
+另外，生成函数有封闭形式，设一个生成函数为 $ F(x) = \sum _ {n \ge 0} x ^ n $，则我们不难发现，$ xF(x) + 1 = F(x) $，如果我们直接把这个东西看作关于 $F(x)$ 的方程，则解得 $ F(x) = \frac{1}{1 - x} $，这个东西就是生成函数的封闭形式
+
+你肯定会觉得这个东西和幂级数是否收敛有关，但是
+
+> 与其说它有帮助，还不如说它是一个障碍 ——《具体数学》
+
+~~葛立恒、高德纳所言即是~~
+
+# 1.运算
+
+加法很简单，$ \langle c _ n \rangle = \langle a _ n \rangle + \langle b _ n \rangle = \langle a _ n + b _ n \rangle $
+
+乘法则可以看成多项式乘法，也叫做卷积。因为这玩意是离散的，所以 $ \langle c _ n \rangle = \langle a _ n \rangle \ast \langle b _ n \rangle = \langle \sum _ {k = 0} ^ n a _ k b _ {n - k} \rangle$。
+
+而除法等其他的则涉及多项式求逆。
+
+一般，我们不管 $x$ 的意义，只关注系数和指数。
+
+# 2.应用
+
+### 数学
+
+我们可以用生成函数来证明一些恒等式。
+
+以范德蒙德卷积为例：
+
+设 $ \langle a _ n \rangle = (1 + x) ^ r = \sum _ {n = 0} ^ r C _ r ^ n x ^ n,\langle b _ n \rangle = (1 + x) ^ s = \sum _ {n = 0} ^ s C _ s ^ n x ^ n,\langle c _ n \rangle = (1 + x) ^ {r + s} = \sum _ {n = 0} ^ {r + s} C _ {r + s} ^ n x ^ n$。
+
+不难发现，$ \langle c _ n \rangle = \langle a _ n \rangle \ast \langle b _ n \rangle $。
+
+那我们把这个卷积展开，得到 $ \langle c _ n \rangle = \langle \sum _ {k = 0} ^ n a _ k b _ {n - k} \rangle $。
+
+我们再带入 $ a _ n = C _ r ^ n,b _ n = C _ s ^ n,c _ n = C _ {r + s} ^ n $，则有 $ C _ {r + s} ^ n = \sum _ {k = 0} ^ n C _ r ^ k C _ s ^ {n - k} $。
+
+如果你看到了这里，那么恭喜你，你证明了范德蒙德卷积。
+
+### OI
+
+这个东西可以拿来求解一些类似背包问题的东西，更准确的，是**无标号**计数问题，以[这个](https://www.luogu.com.cn/problem/P2347)为例，~~是不是有点大材小用~~，我们对每一个砝码，列出它的生成函数。
+
+$$
+f(1) = 1 + x + \ldots + x ^ {a _ 1} \\
+f(2) = 1 + x ^ 2 + \ldots + (x ^ 2) ^ {a _ 2} \\
+\vdots
+f(20) = 1 + x ^ {20} + \ldots + (x ^ {20}) ^ {a _ {20}}
+$$
+
+然后答案的生成函数就很好求了，$ A(x) = f(1) \ast f(2) \ast \ldots \ast f(20) $，根据题面，答案即为 $ \sum _ {i = 1} ^ {1000} [[x ^ i]A(x) \ge 1] $。
+
+
+相对的，EGF 解决的是**有标号**的计数问题~~下期预定~~。

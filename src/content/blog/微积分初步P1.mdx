@@ -1,0 +1,172 @@
+---
+title: 微积分Part 1
+description: 函数极限 求导 极值专题
+pubDate: 2024-12-5
+categories:
+    - 大数学照亮世界
+tags:
+    - 数学
+    - 微积分
+---
+
+P.S. 作者只是个初三的蒟蒻，本系列仅讲对 OI/高中数学有用的。
+
+这玩意是个大头，分几块来讲吧。
+
+[P2 指北](/blog/%E5%BE%AE%E7%A7%AF%E5%88%86%E5%88%9D%E6%AD%A5p2/)
+
+## 0.函数极限
+
+### 定义
+当 $x \to a$ 但 $x \neq a$ 时，函数 $f(x)$ 会趋于一个值 $A$，这个值就叫函数的极限，记作 $\lim _ {x \to a} f(x) = A$。
+
+然而我们不能这么随意的定义一个数学概念，所以我们得用 $\epsilon-\delta$ 语言来定义。
+
+定义如下：
+
+$$
+\forall \epsilon \gt 0,\exist \delta \gt 0, \forall x: 0 \lt |x - a| \lt \epsilon ,|f(x) - A| \lt \delta
+$$
+
+这 b 玩意好烦啊，就是 $x \to x _ 0$ 时，能找到正数 $\epsilon,\delta$，使得 $0 \lt |x - x _ 0| \lt \epsilon$ 时，$0 \lt |f(x) - A| \lt \delta$。
+
+要注意区分函数的取值和极限，比如函数 $f(x) = \begin{cases} x,x \neq 0 114 ,x=0 \end{cases}$，$f(0) = 114$，但 $\lim _ {x \to 0} f(x) = 0$，因为极限有个含义，是无限接近但不相等。
+
+### 运算法则 & 性质
+
+#### 运算法则
+
+设 $@$ 为 $\infty,a \in \R,0,0 ^ +,0 ^ -$ 中任意一个，
+$$
+\lim _ {x \to @} f(x) + \lim _ {x \to @} g(x) = \lim _ {x \to @} (f(x) + g(x)) 
+\lim _ {x \to @} f(x) \times \lim _ {x \to @} g(x) = \lim _ {x \to @} (f(x) \times g(x)) 
+(\lim _ {x \to @} f(x)) ^ {\lim _ {x \to @} g(x)} = \lim _ {x \to @} (f(x)) ^ {g(x)} \text{（前提是等式左边有意义）}
+$$
+
+注：这里包括了逆运算，极限乘法的逆运算存在，当且仅当 $\lim _ {x \to @} g(x) \neq 0$
+
+#### 性质
+
+1. 若 $f(x) \le g(x) \le h(x)$，且 $\lim _ {x \to x _ 0} f(x) = \lim _ {x \to x _ 0} h(x) = A $，则有 $\lim _ {x \to x _ 0} = A$
+2. 极限若存在则唯一
+3. 若 $\lim _ {x \to x _ 0} f(x)$ 存在，则 $sgn \lim _ {x \to x _ 0} f(x) = sgn f(x _ 1),x _ 1 \in (x _ 0 - \delta,x _ 0) \cup (x _ 0,x _ 0 + \delta),\delta \gt 0$
+
+《高等数学》上极限太散了，我把它汇总一下吧。
+
+注：以下可能需要其他知识。
+
+### 求法
+
+一般可以看出来，但是有的 byd 题会让你证明，这个时候就得用 $\epsilon-\delta$ 语言来证明。
+
+可以设一个 $\epsilon$，然后再找出一个符合定义的 $\delta$，然后就可求证了。
+
+#### 洛必达法则
+
+结论：若 $f(x),g(x)$ 均在定义域上连续，则有 $\lim _ {x \to @} \frac{f(x)}{g(x)} = \lim _ {x \to @} \frac{f'(x)}{g'(x)}$
+
+并且，这个东西只要满足定义，**就可以洛！**
+
+## 1.函数的连续性 & 函数的导数
+
+函数连续有个描述性定义，能一笔把函数图像画出来。
+
+其实描述性定义就够了，间断点这玩意我觉得没啥用。
+
+所以直接进入正题
+
+### 导数
+
+定义 $\lim _ {\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}$ 为 $f(x)$ 在 $x$ 处的导数。
+
+某点导数存在的充要条件是其左右极限存在且相等。
+
+我们可以发现，$f(x)$ 的所有导数也满足函数关系，所以我们可以把 $f(x)$ 的所有导数组成一个函数，叫做 $f(x)$ 的导函数，简称 **导数** （注意和上面的导数区分，这个是个函数，上面的是个数），记作 $\frac{\text{d}f(x)}{\text{d}x},f'(x),\frac{\text{d}}{\text{d}x} f(x)$
+
+类似的，我们可以再对导函数求导，称为 $f(x)$ 的二阶导，记作 $f''(x),\frac{\text{d} ^ 2}{\text{d}x ^ 2}f(x)$，然后满足定义就可以再导，记为 $f ^ {(n)}(x),\frac{\text{d} ^ n}{\text{d}x ^ n} f(x)$
+
+函数的一阶导反映了函数的单调性：
+
+$$
+f(x)\text{单调递增} \leftrightarrow f'(x) \gt 0
+f(x)\text{单调递减} \leftrightarrow f'(x) \lt 0
+$$
+
+函数的二阶导反映了函数的凹凸性：
+
+$$
+f(x)\text{上凸式增长} \leftrightarrow f'(x)\text{单调递增} \leftrightarrow f''(x) \gt 0\\
+f(x)\text{下凸式增长} \leftrightarrow f'(x)\text{单调递减} \leftrightarrow f''(x) \lt 0
+$$
+
+几何意义：$f'(x)$ 表示 $f(x)$ 的图像上 $(x,f(x))$ 处的切线斜率。
+
+### 运算法则
+
+$$
+(f(x) \pm g(x))' = f'(x) \pm g'(x)
+(f(x)g(x))' = f'(x)g(x) + f(x)g'(x)
+(\frac{f(x)}{g(x)})' = \frac{f'(x)g(x) - f(x)g'(x)}{g ^ 2 (x)}
+$$
+
+导数乘除法可简记为 **前导后不导，后导前不导**
+
+高阶导数的求法：$(uv) ^ {(n)} = \sum _ {i = 0} ^ n C _ n ^ i u ^ {n - i} v ^ i$
+### 导数表
+
+~~我认为导数的核心就是背~~
+
+$$
+(C)' = 0\ \ (x ^ a)' = ax ^ {a - 1}(a \in \Z)
+(a ^ x)' = a ^ x \ln a \to (e ^ x)' = e ^ x
+(\log _ a x)' = \frac{1}{x \ln a} \to (\ln x)' = \frac{1}{x}
+(\sin x)' = \cos x\ \ (\cos x)' = -\sin x
+(\tan x)' = \sec ^ 2 x = \frac{1}{\cos ^ 2 x} \ \ (\cot x)' = -\csc ^ 2x = -\frac{1}{\sin ^ 2 x}
+$$
+
+高中数学差不多就这些了，高等数学等大学了再说。
+
+### 多元函数的导数
+
+以二元函数举例。
+
+定义函数 $f(x,y)$ 在 $(x,y,f(x,y))$ 处对 $x$ 的偏导数为 $\lim _ {\Delta x \to 0} \frac{f(x + \Delta x,y) - f(x,y)}{\Delta x}$，记为 $\frac{\partial f(x,y)}{\partial x},f _ x(x,y)$。
+
+同理，对 $y$ 的偏导数可以定义为 $\lim _ {\Delta y \to 0} \frac{f(x,y + \Delta y) - f(x,y)}{\Delta y}$，记为 $\frac{\partial f(x,y)}{\partial y},f _ y (x,y)$。
+
+## 2.函数的极值
+
+### 一元函数的极值
+注意，这里是 **极值**，不是 **最值**。
+
+由上面导数的几何意义得，当 $f'(x) = 0$ 时，函数在该点是个峰值，是个极大/极小值。
+
+那么怎么判断这是极大值还是极小值呢？可以用二阶导来判断。
+
+当 $f'(x) = 0,f''(x) \lt 0$ 时，$f'(x)$ 在区间上单调递增，也就是在图像的最低点上，是个极小值。
+
+当 $f'(x) = 0,f''(x) \gt 0$ 时，$f'(x)$ 在区间上单调递减，在图像的最高点上，是极大值。
+
+### 多元函数的极值
+
+这个东西只有个必要条件，没有充分条件：极值点各偏导数值为 $0$ 。
+
+#### 条件极值—拉格朗日乘数法
+
+这种问题可以抽象为 $f(x,y)$ 在满足条件 $\phi(x,y) = 0$ 下的极值。
+
+直接给出解法：
+
+$$
+\begin{cases} f _ x + \lambda\phi _ x(x,y) = 0 f _ y + \lambda\phi _ y(x,y) = 0 \end{cases}
+$$
+
+解出来就好了。这种方法就非常暴力。
+
+当然高中的题可以用各种不等式来解，但我懒得想怎么构造不等式，所以就直接导了。
+
+然后高一会让你证明函数单调性，如果你导数学的好可以一眼看出结论，然后再慢慢证。
+
+并且 OI 中某些求极值的二分题可以用二分+求导做出来，高精度开根需要牛顿迭代，也需要求导。
+
+多项式中需要这些知识，并且有的题需要数值方法来做，要牵扯到这个。

@@ -1,0 +1,110 @@
+---
+title: 珂朵莉树/颜色段均摊
+description: 珂朵莉树
+pubDate: 2024-12-2
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+    - 数据结构
+---
+
+~~看到幸福的随机数据题就该用幸福的珂朵莉树啦~~
+
+## 0.基本定义
+
+我也不知道 lxl dalao 怎么想出来这种 ~~神仙~~ 的算法的。反正就是在 CF896C 这道题里，数据随机，并且有区间赋值，就可以做了。
+
+其实本质上就是一个 `set` 维护的一段段的颜色，每种操作都是 **暴力处理** 的。
+
+## 1.代码
+
+### 定义
+```cpp
+struct Chtholly
+{
+    int l,r;
+    mutable int val;
+    bool operator<(const Chtholly &a) const {return l < a.l;};
+    Chtholly(int l,int r = 0,int val = 0):l(l),r(r),val(val){};
+};
+set<Chtholly> odt;
+#define iter set<Chtholly>::iterator
+```
+
+这就是珂朵莉树的定义，维护的是一个段，表示区间 $[l,r]$ 内都是 val，注意 `val` 前面那个 `mutable`，很重要。
+
+因为在用迭代器迭代 `set` 的时候，迭代器的原型是 `std::set<Chtholly>::const_iterator`，不加 `mutable` 不支持修改，所以必须带一个 `mutable` 才能用迭代器修改。
+
+还有用 `map` 和手搓链表实现的，但我觉得没什么用，复杂度还不如用 `set`。
+
+### 分裂
+
+```cpp
+iter split(int pos)
+{
+    iter it = odt.lower_bound(Chtholly(pos));
+    if(it != odt.end() && it->l == pos)
+        return it;
+    --it;
+    if(it->r < pos)
+        return odt.end();
+    int l = it->l,r = it->r,val = it->val;
+    odt.erase(it);
+    odt.insert(Chtholly(l,pos - 1,val));
+    return odt.insert(Chtholly(pos,r,val)).first;
+}
+```
+本质就是找到第一个左端点大于等于 ```pos``` 的段，删除这一段后插入两个分裂后的段，分裂为 $[l,pos - 1],[pos,r]$
+
+一眼可以看出，分裂肯定会导致段数暴增，进而导致复杂度起飞，所以下面的区间推平就是为防止这种情况出现。
+
+### 区间赋值/区间推平
+
+```cpp
+void assign(int l,int r,int x)
+{
+    iter rit = split(r + 1),lit = split(l);
+    odt.erase(lit,rit);
+    odt.insert(Chtholly(l,r,x));
+}
+```
+如上，就是分裂出区间后暴力删除并插入。
+
+注意，要先分裂 $r + 1$ 再分裂 $l$，因为反过来会导致迭代器失效，造成各种奇奇怪怪的 WA&RE。
+
+### 区间操作
+
+```cpp
+Any perform(int l,int r,...)
+{
+    iter rit = split(r + 1),lit = split(l);
+    // Perform Here
+}
+```
+
+## 2.复杂度
+
+这种东西一看就是暴力数据结构，但是神奇的是，在保证数据随机并且有区间推平的情况下，复杂度为 $\Omicron(n \log \log n)$，并且常数很优秀。
+
+具体证明看 CF 上 ODT 的证明，大致意思是段数是 $\Omicron(\log n)$ 级别的，然后对颜色段的操作复杂度是 $\Omicron(\log n)$ 的，所以总复杂度是 $\Omicron(n \log \log n)$ 的。
+
+总结就是，用 `set` 实现的是 $\Omicron(n \log \log n)$，`map` 和链表都是 $\Omicron(n \log n)$。
+
+## 3.扩展 ODT
+
+由上得，ODT 是靠区间推平来维护复杂度的，可是有的出题人，会构造的全是查询的数据来卡掉 ODT。
+
+这个时候，就该用上扩展 ODT 了。
+
+知周所众，替罪羊树有不用旋转还能平衡的秘诀就是，只要不平衡，就炸了重构...
+
+所以就可以结合一下 ODT 和替罪羊树，就有了保证根号复杂度的 ODT，并且 **无需区间推平**。
+
+比如[这道](https://www.luogu.com.cn/problem/P3391)
+
+发现，刚开始的序列是一个公差为 $+1$ 的等差数列，并且每次操作均是置换群上的置换，所以我们完全可以维护置换与对原序列的映射。
+
+然后，只要段数大于 $B( = \sqrt{n})$ 时，就算一下当前序列，然后重新构造扩展 ODT。
+
+还有一种用法：节点对区间的映射，但是模板都是黑题，不会。

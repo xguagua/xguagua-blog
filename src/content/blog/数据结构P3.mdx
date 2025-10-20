@@ -1,0 +1,425 @@
+---
+title: 数据结构Part 3
+description: FHQ Treap
+pubDate: 2025-1-22
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+    - 数据结构
+---
+
+每一种平衡树会分 P 讲。
+
+## 0.定义
+
+平衡树，说白了它还是个 BST，只不过朴素 BST 的所有操作复杂度是 $\Omicron(h)$ 的，可以构造数据**卡成 $\Omicron(n ^ 2)$**。
+
+这个时候，就可以用各种神奇方法来维护这个 BST 的平衡，使其树高为 $\Omicron(\log n)$。
+
+Treap 这种平衡树用的是~~数学期望~~堆的性质，一个点，除了自己的值外，我们再维护一个**随机**权值，然后让值满足 BST 的性质，权值满足堆的性质。
+
+一般平衡树维护平衡的方式是通过旋转（替罪羊树除外，那玩意是暴力美学），而 FHQ Treap 就不用，它用分裂 + 合并。
+
+但是，能不写平衡树的题尽量不要写平衡树，因为常数会大的飞起来。
+
+权值树状数组跑 260ms 的，平衡树能跑 672ms。
+
+## 1.实现
+
+我们维护以下信息：
+
+```cpp
+struct Node
+{
+    int ls,rs, // 左右儿子
+    val, // 值
+    rank, // 随机权值
+    size; // 子树大小
+}tree[MAXN];
+int root,cnt; // 根节点，节点个数（指针式不需要）
+#define lson(rt) tree[rt].ls
+#define rson(rt) tree[rt].rs
+```
+
+### 新建节点
+
+我觉得没什么好讲的。
+
+```cpp
+random_device seed;
+mt19937 rnd(seed());
+// 上面是随机数生成器
+inline int newNode(int val) // 新建节点，并返回其编号
+{
+    ++cnt;
+    lson(cnt) = rson(cnt) = 0,
+    tree[cnt].val = val,
+    tree[cnt].rank = rnd(),
+    tree[cnt].size = 1; // 自己大小为 1
+    return cnt;
+}
+```
+
+### 统计子树大小
+
+也没什么好讲的，就是注意一下自己这个节点也算进该子树。
+
+```cpp
+inline void pushup(int rt)
+{
+    tree[rt].size = tree[lson(rt)].size + tree[rson(rt)].size + 1;
+}
+```
+
+### 合并
+
+我们传入两个值：`L,R`，表示待合并的左右子树的根节点，返回一个值：合并完成后的根节点。
+
+因为这两个树都是已经平衡的 FHQ Treap，所以我们只用考虑谁在上，谁在下。
+
+如果某一个节点为 $0$，说明已经合并完成了，直接返回另一个节点。
+
+否则，我们比较两个点的随机权值（不用特别区分大小，因为随机权值没有利用价值），然后递归向下合并。
+
+若左子树在上，就合并根节点的右儿子和右根节点，否则合并右根节点的左儿子和左根节点。
+
+合并完成后，更新子树大小。
+
+只要看懂了就很好写出代码。
+
+```cpp
+inline int merge(int L,int R)
+{
+    if(!L || !R)
+        return L | R;
+    if(tree[L].rank < tree[R].rank)
+    {
+        rson(L) = merge(rson(L),R);
+        pushup(L);
+        return L;
+    }
+    else
+    {
+        lson(R) = merge(L,lson(R));
+        pushup(R);
+        return R;
+    }
+}
+```
+
+### 分裂
+
+这个分两种：按值分裂和按排名分裂（序列平衡树里面用）
+
+#### 按值分裂
+
+将一棵 FHQ Treap 按值分裂，小于等于这个值的分到左边，大于的分到右边
+
+回顾一下 FHQ Treap 的形态，值满足 BST，权值满足堆。
+
+也就是说，一个节点的左儿子的值小于自己的值，右儿子的值大于自己的值。
+
+因此，我们对于每一个节点，与目标值比较，如果小于，更新左树的根为此节点，前往右子树接着分裂；反之，就前往左子树。
+
+代码如下：
+
+```cpp
+inline void splitVal(int rt,int val,int &L,int &R) // 注意，要更新，所以是引用
+{
+    if(!rt)
+    {
+        L = R = 0;
+        return ;
+    }
+    if(tree[rt].val <= val)
+    {
+        L = rt;
+        splitVal(rson(rt),val,rson(rt),R);
+    }
+    else
+    {
+        R = rt;
+        splitVal(lson(rt),val,L,lson(rt));
+    }
+    pushup(rt); //记得更新这个节点的信息
+}
+```
+
+#### 按排名分裂
+
+还是类似，不过这次比较的是目标排名和**左子树的大小加一**。
+
+如果左子树的大小**小于**排名，则应该前往右子树，同时排名也需要更新（可以理解为已经考虑了自己和左子树）。反之，就前往左子树。
+
+代码如下：
+
+```cpp
+inline void splitRank(int rt,int rk,int &L,int &R)
+{
+    if(!rt)
+    {
+        L = R = 0;
+        return ;
+    }
+    if(tree[lson(rt)].size < rk)
+    {
+        L = rt;
+        splitRank(rson(rt),rk - tree[lson(rt)].size - 1,rson(rt),R);
+    }
+    else
+    {
+        R = rt;
+        splitRank(lson(rt),rk,L,lson(rt));
+    }
+    pushup(rt);
+}
+```
+
+最重要的两个操作就讲完了。
+
+接下来我们分**普通平衡树（值域树）**和**文艺平衡树（序列树）**
+
+### 普通平衡树
+
+#### 插入
+
+由于 `merge` 只是合并起来，不能自动排序，所以我们需要在 $val - 1$ 处按值分裂，然后新建一个节点，与分裂出的两棵树合并。
+
+代码如下：
+
+```cpp
+inline void insert(int val)
+{
+    int x,y;
+    splitVal(root,val - 1,x,y);
+    root = merge(merge(x,newNode(val)),y);
+}
+```
+
+#### 删除
+
+我们可以按照值，把树分裂为三段：$[-\infty,val - 1],val,[val + 1,\infty]$，然后把 $[-\infty,val - 1]$ 和 $[val + 1,\infty]$ 合并。
+
+如果只删一个，就合并中间那段的根节点的左右儿子，然后处理掉根节点。
+
+代码如下：
+
+```cpp
+inline void remove(int val)
+{
+    int x,y,z;
+    splitVal(root,val - 1,x,y);
+    splitVal(y,val,y,z);
+    pool[++top] = y; // 扔进垃圾桶
+    y = merge(lson(y),rson(y))
+    root = merge(merge(x,y),z);
+}
+```
+
+#### 求 K 小值
+
+类似按排名分裂，如果左子树大小加一与 $K$ 相等，则直接输出该节点的值；如果大于，则前往左儿子，否则前往右儿子。
+
+可以写迭代，会快一点：
+
+```cpp
+inline int queryKth(int k)
+{
+    int rt = root;
+    while(rt)
+    {
+        if(tree[lson(rt)].size + 1 == k)
+            break;
+        else if(tree[lson(rt)].size >= k)
+            rt = lson(rt);
+        else
+        {
+            k -= tree[lson(rt)].size + 1;
+            rt = rson(rt);
+        }
+    }
+    return tree[rt].val;
+}
+```
+#### 求排名
+
+可以直接分裂，左树大小加一就是排名：
+
+```cpp
+inline int queryRank(int val)
+{
+    int x,y;
+    splitVal(root,val - 1,x,y);
+    int res = tree[x].size + 1;
+    root = merge(x,y);
+    return res;
+}
+```
+
+#### 求前驱
+
+我们按照值分出两棵树，然后找到左树的右链底，就是该值的前驱。
+
+解释一下，由于 BST 的性质，一个节点的右儿子一定大于该节点的值，所以右链链底一定是该树中最大的值。
+
+为什么不用查排名配合 K 小值呢？因为这样常数会小点。
+
+```cpp
+inline int queryPrev(int val)
+{
+    int x,y,rt;
+    splitVal(root,val - 1,x,y);
+    rt = x;
+    while(rson(rt))
+        rt = rson(rt);
+    root = merge(x,y);
+    return tree[rt].val;
+}
+```
+
+如何判断无解？没有左树就无解。
+
+#### 求后继
+
+类似，分裂以后右树左链链底就是答案。
+
+```cpp
+inline int queryNext(int val)
+{
+    int x,y,rt;
+    splitVal(root,val,x,y);
+    rt = y;
+    while(lson(rt))
+        rt = lson(rt);
+    root = merge(x,y);
+    return tree[rt].val;
+}
+```
+
+#### 快速建树
+
+我们把每一个值直接插入树的建树方法有的时候还是太慢了。这个时候我们就可以用笛卡尔树的建树法。先排序，然后从中点处分开，对左右区间分别建树后合并就好了。
+
+这个是通用的，只不过权值树需要排序。
+
+```cpp
+inline int build(int l,int r)
+{
+    if(l == r)
+        return newNode(a[l]);
+    int mid = (l + r) >> 1,rt = newNode(a[mid]);
+    lson(rt) = build(l,mid - 1),rson(rt) = build(mid + 1,r);
+    pushup(rt);
+    return rt;
+}
+```
+
+### 文艺平衡树
+
+前面说了，FHQ Treap 的值满足 BST 的性质，于是我们可以将下标看作值，值额外记录。这样我们就可以让 FHQ Treap 支持区间操作。
+
+这里是需要用按排名分裂的。
+
+当我们想操作区间 $[l,r]$ 时，我们可以将整个 FHQ Treap 分裂成三段： $[1,l - 1],[l,r],[r + 1,n]$，然后对中间那段进行操作，操作完了直接合并回去就好了。
+
+但是，中间那个区间可能奇长无比，可以卡到你 T 飞，所以，我们可以运用线段树的懒标记思想。
+
+其实就是每次操作以后，在这个节点处打个标记，然后分裂和合并这种需要访问子节点的操作，就把标记下放。
+
+类似下面：
+
+```cpp
+inline void pushdown(int rt)
+{
+    if(tree[rt].haveTag)
+    {
+        if(lson(rt)) //防止给空节点赋一些奇奇怪怪的值
+            update(lson(rt));
+        if(rson(rt))
+            update(rson(rt));
+        tree[rt].clearTag();
+    }
+}
+```
+
+其实这种懒标记思想是通用的，值域树也可以打懒标记。
+
+但是要注意的是，FHQ Treap 是 **Nody Tree**，一定要注意这个节点也需要更新。
+
+所以，~~你可以把 Seg Beats 那一堆全部搬过来让你的代码长度更上一层楼~~。
+
+## 2.常用优化技巧
+
+因为平衡树的时空常数都大的离谱，所以卡常就很重要。
+
+### 空间优化
+
+对于删除的节点，我们可以重复利用空间。
+
+就是在删除节点的时候，我们记录该节点的编号，压到一个栈里。在 `newNode` 的时候，优先使用栈里面的节点，栈空了才申请额外空间。
+
+### 时间优化
+
+最常用的就是上面的快速建树法。
+
+由于 FHQ Treap 和 Splay 的常数都大的飞起，所以只用值域树的题可以用 STL/PBDS 封装好的红黑树，区间树可以换成 WBLT。
+
+## 3.可持久化
+
+由于 FHQ Treap 的分裂与合并都不会调整祖先关系，所以可以很方便的可持久化。
+
+分裂的时候，把涉及到的节点全部复制一遍，合并的时候也是，也就比不可持久化的多了两行。
+
+```cpp
+inline int copyNode(int o)
+{
+    ++cnt;
+    lson(cnt) = lson(o),rson(cnt) = rson(o);
+    tree[cnt].rank = rnd();
+    tree[cnt].val = tree[o].val;
+    tree[cnt].size = tree[o].size;
+    return cnt;
+}
+inline int merge(int L,int R)
+{
+    if(!L || !R)
+        return L | R;
+    if(tree[L].rank < tree[R].rank)
+    {
+        int rt = copyNode(L);
+        rson(rt) = merge(rson(rt),R);
+        pushup(rt);
+        return rt;
+    }
+    else
+    {
+        int rt = copyNode(R);
+        lson(rt) = merge(L,lson(rt));
+        pushup(rt);
+        return rt;
+    }
+}
+inline void splitVal(int rt,int val,int &L,int &R)
+{
+    if(!rt)
+    {
+        L = R = 0;
+        return ;
+    }
+    if(tree[rt].val <= val)
+    {
+        L = copyNode(rt);
+        splitVal(rson(L),val,rson(L),R);
+        pushup(L);
+    }
+    else
+    {
+        R = copyNode(rt);
+        splitVal(lson(R),val,L,lson(R));
+        pushup(R);
+    }
+}
+```
+
+如果空间实在吃紧，可以考虑直接重构整棵树。

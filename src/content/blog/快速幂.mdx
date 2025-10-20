@@ -1,0 +1,124 @@
+---
+title: 快速幂
+description: 快速幂
+pubDate: 2024-12-4
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+---
+
+~~这矩阵的 LaTeX 是真 nm 难打~~
+
+## 0.基本原理
+
+知周所众，朴素地计算 $a ^ b$ 的时间复杂度是 $\Omicron(b)$ 的，在某些数据下会 TLE，这个时候就得用快速幂 ~~（不然我写这个干吗）~~。
+
+又知周所众，任意一个十进制数都有唯一的二进制数和它对应，比如 $6 = 4 + 2 = 2 ^ 2 + 2 ^ 1$。
+
+我们又能注意到，$a ^ 6 = a ^ 4 \times a ^ 2 = a ^ {2 ^ 2} \times a ^ {2 ^ 1} = ((a) ^ {2}) ^ {2} \times (a) ^ 2$。
+
+所以，我们就能二进制拆分一下指数，来进行快速幂计算。
+
+这里的运算只要满足结合律就可以。
+
+这里使用了倍增和运算的 **结合律**。
+
+### 模板
+
+~~这是真模板~~
+
+```cpp
+template<typename T>
+T qpow(T b,int p)
+{
+    T res = T(1); //该运算的单位元
+    while(p)
+    {
+        if(p & 1)
+            res = res * b;
+        b = b * b;
+        p >>= 1;
+    }
+    return res;
+}
+```
+
+## 1.矩阵快速幂
+
+### 1.板子
+
+以斐波那契数列为例
+
+$$
+f _ i = \begin{cases} 1,i = 1,2 f _ {i - 1} + f _ {i - 2} , i \gt 2 \end{cases}
+$$
+
+很容易看出，这是一个递推式。所以我们可以把它放在一个矩阵里面。
+
+$$
+F _ i = \begin{bmatrix} f _ {i} & f _ {i - 1} \end{bmatrix}
+$$
+
+我们 ~~惊人地~~ 发现，矩阵乘法的定义和递推的转移类似
+
+$$
+C = AB
+C _ {i,j} = \sum _ {i = 1} ^ k A _ {i,k} B _ {k,j}
+$$
+
+所以我们可以尝试构造出一个矩阵，使 $F _ i B = F _{i + 1}$
+
+构造方法可以使用待定系数法，如下：
+
+$$
+\begin{bmatrix} f _ {i} & f _ {i - 1} 0 & 0 \end{bmatrix} \begin{bmatrix} a & b c & d \end{bmatrix} = \begin{bmatrix} af _ i + c f _ {i - 1} & b f _ i + d f _ {i - 1} 0 & 0 \end{bmatrix} = \begin{bmatrix} f _ {i + 1} & f _ i 0 & 0 \end{bmatrix}
+$$
+
+解得 $\begin{cases} a = 1 b = 1 c = 1 d = 0 \end{cases}$。
+
+所以转移矩阵就是 $\begin{bmatrix} 1 & 1 1 & 0 \end{bmatrix}$。
+
+所以斐波那契数列的第 $n + 2$ 项就是 $F _ 2 B ^ n$
+
+为什么要从 $F _ 2$ 开始转移呢？因为 $f _ i$ 在 $i \gt 0$ 时 才有意义，所以 $F$ 从第 $2$ 项开始才有意义。
+
+### 2.图论中邻接矩阵的幂的意义
+
+[证明见此](https://blog.csdn.net/u010504064/article/details/39781709?utm_source=blogxgwz0)，懒得写了。
+
+这些方案都是相互独立的，所以根据乘法原理，可以乘起来再求和，恰好和矩阵乘法一致，可以加速。
+
+总结就是 $G ^ n _ {i,j} $ 为 $i$ 到 $j$ 经过 $n$ 条边的方案数。
+
+#### 推广
+
+我们定义 $C = A \times B,C _ {i,j} = \min _ {i = 1} ^ k (A _ {i,k} + B _ {k,j})$ 
+
+是不是很像 Floyd 的转移方式？
+
+多打几组表可以发现，$C ^ n _ {i,j}$ 就是 $i$ 到 $j$ **恰好** 经过 $n$ 条边的最短路。
+
+又因为加法满足结合律，$\min$ 也满足结合律，所以也可以用快速幂优化。
+
+上述方法的底层逻辑都是 DP，所以，我们就可以得出矩阵快速幂的另一种用法，优化 DP。
+
+## 2.置换
+
+定义一个置换群上的置换如下：
+
+$$
+\begin{pmatrix} a _ 1 & a _ 2 & \ldots & a _ n a _ {\sigma  _ 1} & a _ {\sigma _ 2} & \ldots & a _ {\sigma _ n}\end{pmatrix}
+$$
+
+置换复合太 tm 难打了，[贴个链接看吧](https://oi-wiki.org/math/permutation/#%E5%A4%8D%E5%90%88)。
+
+因为在置换 **群** 上，满足结合律，所以就可以用快速幂计算了。
+
+### 置换开根
+
+置换在置换群上有乘法逆元，则置换 $\sigma = \begin{pmatrix} 1 & 2 & \ldots & n a _ 1 & a _ 2 & \ldots & a _ n \end{pmatrix}$ 的逆 $\sigma ^ {-1}$ 为 $\begin{pmatrix} a _ 1 & a _ 2 & \ldots & a _ n 1 & 2 & \ldots & n \end{pmatrix}$
+
+又因为 $\sqrt[n]x = x ^ {\frac{1}{n}} = (x ^ n) ^ {-1} $，所以也可以用快速幂优化。
+
+就差不多了吧。。。

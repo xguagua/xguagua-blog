@@ -1,0 +1,200 @@
+---
+title: 狄利克雷卷积与杜教筛
+description: 狄利克雷卷积与杜教筛
+pubDate: 2025-7-4
+categories:
+    - 大数学照亮世界
+tags:
+    - 数学
+    - 数论
+---
+
+import Collapse from "../../components/mdx/Collapse.astro";
+
+填坑说是。
+
+### 0. 狄利克雷卷积
+
+在莫比乌斯反演那提过一点，现在来系统性的讲一下。
+
+#### 数论函数
+
+指定义域为 $\N _ +$ 的函数。
+
+我们定义两个数论函数 $f,g$ 的加法为 $(f + g)(n) = f(n) + g(n)$，数乘为 $(xf)(n) = x \cdot f(n)$，点乘为 $(f \cdot g)(n) = f(n)g(n)$
+
+以下所有内容中，数乘不会打符号，点乘会打点号，注意区分。
+
+#### 狄利克雷卷积
+
+我们定义两个数论函数 $f,g$ 的狄利克雷卷积 $f \ast g$ 为 $(f \ast g)(n) = \sum \limits _ {d \mid n} f(d)g(\frac{n}{d}) = \sum \limits _ {xy = n} f(x)g(y)$
+
+对于一个运算，我们肯定要探寻它的性质。
+
+1. 狄利克雷卷积有交换律，即 $f \ast g = g \ast f$
+2. 有结合律，即 $f \ast (g \ast h) = (f \ast g) \ast h$
+3. 对数论函数加法与数乘有分配律，即 $f \ast (g + h) = f \ast g + f \ast h,(xf) \ast g = x(f \ast g)$
+4. 两积性函数的狄利克雷卷积也是积性函数
+
+<Collapse title = "证明">
+
+##### 交换律
+
+$$
+\begin{aligned}
+(f \ast g)(n) &= \sum \limits _ {xy = n}f(x)g(y) \\
+&\xlongequal{x \to y,y \to x} \sum \limits _ {yx = n}f(y)g(x) \\
+&= (g \ast f)(n)
+\end{aligned}
+$$
+
+##### 结合律
+
+$$
+\begin{aligned}
+((f \ast g) \ast h)(n) &= \sum \limits _ {xy = n} \sum \limits _ {uv = x} f(u)g(v)h(y) \\
+&\xlongequal{x \to uv} \sum \limits _ {uvy = n} f(u)g(v)h(y) \\
+&\xlongequal{u \to x,v \to u,y \to v} \sum \limits _ {xuv = n} f(x)g(u)h(v) \\
+&\xlongequal{y = uv} \sum \limits _ {xy = n} f(x) \sum \limits _ {uv = y} g(u)h(v) \\
+&= \sum _ {xy = n} f(x)(g \ast h)(y) \\
+&= (f \ast (g \ast h))(n)
+\end{aligned}
+$$
+
+##### 分配律
+
+$$
+\begin{aligned}
+(f \ast (g + h))(n) &= \sum \limits _ {xy = n} f(x)(g + h)(y) \\
+&= \sum \limits _ {xy = n} f(x)(g(y) + h(y)) \\
+&= (\sum \limits _ {xy = n} f(x)g(y)) + (\sum \limits _ {xy = n} f(x)h(y)) \\
+&= (f \ast g)(n) + (f \ast h)(n)
+\end{aligned}
+$$
+
+证明了对加法分配律后对数乘分配律显然，$(xf) \ast g = x(f \ast g)$。
+
+##### 两积性函数的狄利克雷卷积也是积性函数
+
+设 $f,g$ 为两积性函数，$a,b \in \N _ +,\gcd(a,b) = 1$
+
+显然有 $(f \ast g)(1) = f(1)g(1) = 1$。
+
+$$
+\begin{aligned}
+(f \ast g)(a) \cdot (f \ast g)(b) 
+&= \sum _ {d _ 1 \mid a} f(d _ 1)g(\frac{a}{d _ 1}) \cdot \sum _ {d _ 2 \mid b} f(d _ 2)g(\frac{b}{d _ 2}) \\
+&= \sum _ {d _ 1 \mid a,d _ 2 \mid b} f(d _ 1 d _ 2) g(\frac{ab}{d _ 1 d _ 2})
+\end{aligned}
+$$
+
+由于 $\gcd(a,b) = 1$，因此 $ab$ 的所有因数都可以被唯一的表示为 $a$ 的某一因数与 $b$ 的某一因数之积，因此有 $(f \ast g)(a) \cdot (f \ast g)(b) = \sum \limits _ {d \mid ab} f(d) g(\frac{ab}{d}) = (f \ast g)(ab)$。
+
+</Collapse>
+
+狄利克雷卷积存在单位元，这个单位元是 $\epsilon(n) = [n = 1]$。可以自证一下这个为什么是单位元。
+
+既然存在单位元那也就存在逆元，最重要的是莫比乌斯函数 $\mu(n)$ 是常数函数 $\mathbf{1}(n)$ 的逆元。
+
+下面是一些狄利克雷卷积中常用的函数。
+
+- $\mathbf{1}(n) = 1$
+- $\mathbf{Id} ^ k(n) = n ^ k$，在 $k = 1$ 时可以记作 $\mathbf{Id}(n)$
+- $\varphi(n)$，欧拉函数
+- $\mu(n)$，莫比乌斯函数
+- $\epsilon(n) = [n = 1]$
+- $\sigma ^ k(n) = \sum \limits _ {d \mid n} d ^ k$，在 $k = 1$ 时可以记作 $\sigma(n)$，在 $k = 0$ 时可以记作 $d(n)$
+
+我们给出几个重要结论：
+
+> $\varphi = \mathbf{Id} \ast \mu$，因为 $n = \sum \limits _ {d \mid n} \varphi(d)$，可以看作 $\mathbf{Id} = \varphi \ast \mathbf{1}$，两边同时卷个 $\mu$ 得 $\varphi = \mathbf{Id} \ast \mu$
+
+> $\sigma _ k(n) = \mathbf{Id} _ k(n) \ast \mathbf{1}$
+
+好的狄利克雷卷积就差不多到这了。
+
+### 1. 杜教筛
+
+好的正片开始，杜教筛的作用是在亚线性复杂度内计算出一个数论函数 $f$ 的前缀和 $\sum \limits _ {i = 1} ^ n f(i)$ 的。
+
+以下内容中，我们记 $S _ {f}(n) = \sum \limits _ {i = 1} ^ n f(i)$，有时我会略去角标。杜教筛的主要思想，就是找到 $S(n)$ 关于 $S(\lfloor \frac{n}{i} \rfloor)$ 的递推式。
+
+我们设有另一个数论函数 $g$，则有如下关系：
+
+$$
+\begin{aligned}
+\sum \limits _ {i = 1} ^ n (f \ast g)(i) &= \sum \limits _ {i = 1} ^ n \sum \limits _ {d \mid i}g(d)f(\frac{i}{d}) \\
+&= \sum \limits _ {d = 1} ^ n g(d)\sum \limits _ {i = 1} ^ n f(\frac{i}{d}) [d \mid i] \\
+&= \sum \limits _ {d = 1} ^ n g(d) \sum _ {i = 1} ^ {\lfloor \frac{i}{d} \rfloor} f(i) \\
+&= \sum _ {i = 1} ^ n g(i) S(\lfloor \frac{n}{i} \rfloor)
+\end{aligned}
+$$
+
+我们进行移项，就得到了 $g(1)S(n) = \sum \limits _ {i = 1} ^ n (f \ast g)(n) - \sum \limits _ {i = \color{red}{2}} ^ n g(i)S(\lfloor \frac{n}{i} \rfloor) $。
+
+现在就是 $g$ 的选取问题了，我们选择的 $g$ 需要有以下几个特征：
+
+- $\sum _ {i = 1} ^ n (f \ast g)(n)$ 能够快速计算。
+- $\sum _ {i = 1} ^ n g(n)$ 能够快速计算。
+
+选出了满足 $g$ 之后，我们就可以用数论分块算出 $S(n)$ 了，其中的 $S(\lfloor \frac{n}{i} \rfloor)$ 是可以递归下去计算的。
+
+那这个 $g$ 到底怎么选呢？一般采用注意力集中法。但是好像可以从 DGF 来考虑，~~我不会就是了~~。
+
+时间复杂度我不会证明，直接给出结论：如果预处理 $n ^ {\frac{2}{3}}$ 范围内的前缀和，则时间复杂度是 $\Omicron(n ^ {\frac{2}{3}})$ 的，否则是 $\Omicron(n ^ {\frac{3}{4}})$ 的。
+
+在实现时，我们需要对大于 $n ^ {\frac{2}{3}}$ 的值进行记忆化，不嫌麻烦可以开一个大小为 $2 \sqrt{n} $ 的数组，对于 $S(x)$，如果 $x \le \sqrt{n}$ 则存到对应位置，否则存到 $\sqrt{n} + \lfloor \frac{n}{x} \rfloor$，但是一般情况下没人卡这里的常数，所以可以直接上 ```unordered_map```。
+
+下面给出一份基于 ```unordered_map``` 的实现：
+
+```cpp
+inline void Seele(int n = P) // P 是阈值
+{
+    ... // 线性筛出小一点的前缀和
+    for(int i = 1;i <= n;i++)
+        f[i] += f[i - 1]; // 计算前缀和
+}
+unordered_map<int,int> rec;
+inline void getFSum(int n)
+{
+    if(n <= P) // 已经被筛出来了
+        return f[n];
+    if(rec.count(n)) // 算过了
+        return rec[n];
+    int res = ...; // (f * g)(n) 的前缀和
+    for(int l = 2,r;l <= n;l = r + 1)
+    {
+        r = n / (n / l);
+        res -= (g(r) - g(l - 1)) * getFSum(n / l); // 第二个和式
+    }
+    return rec[n] = res; // 记忆化
+}
+```
+
+好，我们现在讲几个例子。
+
+#### [Eg. 1 Luogu P4213 【模板】杜教筛](https://www.luogu.com.cn/problem/P4213)
+
+我们先对 $\mu$ 构造，注意到 $\mu \ast \mathbf{1} = \epsilon$，所以 $f = \mu,g = \mathbf{1}$，递推式为 $S _ {\mu} (n) = 1 - \sum \limits _ {i = 2} ^ n S _ {\mu}(\lfloor \frac{n}{i} \rfloor)$。
+
+再来看 $\varphi$，注意到 $\varphi \ast \mathbf{1} = \mathbf{Id}$，所以递推式为 $S _ {\varphi}(n) = \frac{n(n + 1)}{2} - \sum \limits _ {i = 2} ^ n S _ {\varphi} (\lfloor \frac{n}{i} \rfloor)$。
+
+#### [Eg. 2 Luogu P3768 简单的数学题](https://www.luogu.com.cn/problem/P3768)
+
+推式子先。
+
+$$
+\begin{aligned}
+\sum _ {i = 1} ^ n \sum _ {j = 1} ^ n ij\gcd(i,j) &= \sum _ {d = 1} ^ n d ^ 3 \sum _ {i = 1} ^ {\lfloor \frac{n}{d} \rfloor} \sum _ {j = 1} ^ {\lfloor \frac{n}{d} \rfloor}ij[\gcd(i,j) = 1] \\
+&= \sum _ {d = 1} ^ n d ^ 3 \sum _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor} \mu(x) x ^ 2 \sum _ {i = 1} ^ {\lfloor \frac{n}{dx} \rfloor} i \sum _ {j = 1} ^ {\lfloor \frac{n}{dx} \rfloor} j\\
+&= \sum _ {T = 1} ^ n (\sum _ {d \mid T} d ^ 3 \mu(\frac{T}{d})(\frac{T}{d}) ^ 2) (\sum _ {i = 1} ^ {\lfloor \frac{n}{T} \rfloor} i) ^ 2 \\
+&= \sum _ {T = 1} ^ n (\sum _ {i = 1} ^ {\lfloor \frac{n}{T} \rfloor} i) ^ 2 T ^ 2(\sum _ {d \mid T} d \mu(\frac{T}{d})) \\
+&= \sum _ {T = 1} ^ n (\sum _ {i = 1} ^ {\lfloor \frac{n}{T} \rfloor} i) ^ 2 (T ^ 2 \varphi(T))
+\end{aligned}
+$$
+
+我们现在要筛 $\mathbf{Id} ^ 2 \cdot \varphi$ 的前缀和，注意到当 $g = \mathbf{Id} ^ 2$ 时，$(f \ast g)(n) = \sum \limits _ {d \mid n} d ^ 2 \varphi(d) (\frac{n}{d}) ^ 2 = n ^ 2 \sum \limits _ {d \mid n} \varphi(d) = n ^ 3 $，其前缀和是可以 $\Omicron(1)$ 计算的，并且 $g$ 的前缀和也是可以 $\Omicron(1)$ 计算的。
+
+### 2. 总结
+
+感觉杜教筛的核心就是推成前缀和与瞪眼找 $g$。

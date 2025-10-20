@@ -68,8 +68,8 @@ const currentPath = Astro.url.pathname;
             animate();
           }
       
-          Avatar.addEventListener("mouseenter", (): void => {startAnimation(0);});
-          Avatar.addEventListener("mouseleave", (): void => {startAnimation(1);});
+          Avatar!.addEventListener("mouseenter", (): void => {startAnimation(0);});
+          Avatar!.addEventListener("mouseleave", (): void => {startAnimation(1);});
         });
       </script>
     </div>

@@ -26,7 +26,7 @@ const getMonthName = (month: string): string => {
 };
 
 // 统计总文章数
-const totalPosts = allPosts.length;
+const totalPosts = Math.min(allPosts.length,5);
 ---
 
 <BaseLayout title={t("label.archivePage")}>
