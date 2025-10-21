@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import MainCard from "@/components/MainCard.astro";
+---
+
+<BaseLayout title="Tools">
+  <MainCard
+    title="Tools"
+    description="下面有些自己用的小东西"
+    textOverlay="TOOLS"
+    infoIcon="lucide:calculator"
+  >
+    <!-- <section>
+        <span>计算模意义下的乘法逆元：</span>
+        <div class = "flex">
+            <input id = "ModInverse_Num" type="number" placeholder="输入要取逆元的数" />
+            <input id = "ModInverse_Mod" type="number" placeholder="输入模数" value = "998244353" / >
+        </div>
+        <input id = "ModInverse_Ans" type="number" placeholder="答案会显示在这里" readonly />
+    </section> -->
+    原来的成功被我写炸了，修复中。
+  </MainCard>
+</BaseLayout>
+
+<script>
+  // 逆元，Phi,Mu，质数判断，质因数个数计算，因数个数计算
+  function getInv(num: number,mod: number): number
+  {
+    let x: number = 1,y: number = 0;
+    function exgcd(a: number,b: number): number
+    {
+      if(b == 0)
+      {
+        x = 1;
+        y = 0;
+        return a;
+      }
+      let t = x,d = exgcd(b,a % b);
+      x = y;
+      y = t - Math.floor(a / b) * y;
+      return d;
+    }
+    let res = exgcd(num,mod);
+    return ((res == 1) ? (x + mod) % mod : NaN);
+  }
+
+  function getPhi(x: number): number
+  {
+    let res = x;
+    for(let i = 2;i * i <= x;i++)
+    {
+      if(x % i == 0)
+      {
+        res = res / i * (i - 1);
+        while(x % i == 0)
+          x /= i;
+      }
+    }
+    if(x > 1)
+      res = res / x * (x - 1);
+    return res;
+  }
+
+  function getMu(x: number): number
+  {
+    let cnt = 0;
+    for(let i = 2;i * i <= x;i++)
+    {
+      if(x % i == 0)
+      {
+        cnt++;
+        x %= i;
+        if(x % i == 0)
+          return 0;
+      }
+    }
+    if(x > 1)
+      cnt++;
+    if(cnt == 0)
+      return 1;
+    return (cnt & 1) ? -1 : 1;
+  }
+  
+  function isPrime(x: number): boolean
+  {
+    if(x < 2)
+      return false;
+    for(let i = 2;i * i <= x;i++)
+    {
+      if(x % i == 0)
+        return false;
+    }
+    return true;
+  }
+
+  
+</script>
