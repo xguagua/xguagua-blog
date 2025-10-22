@@ -10,21 +10,51 @@ import MainCard from "@/components/MainCard.astro";
     textOverlay="TOOLS"
     infoIcon="lucide:calculator"
   >
-    <!-- <section>
-        <span>计算模意义下的乘法逆元：</span>
+    <section class = "mb-4">
+        <span class = "flex">计算模意义下的乘法逆元</span>
         <div class = "flex">
-            <input id = "ModInverse_Num" type="number" placeholder="输入要取逆元的数" />
-            <input id = "ModInverse_Mod" type="number" placeholder="输入模数" value = "998244353" / >
+            <input id = "ModInverse_Num" placeholder = "输入要取逆元的数" />
+            <input id = "ModInverse_Mod" placeholder = "输入模数" value = "998244353" / >
         </div>
-        <input id = "ModInverse_Ans" type="number" placeholder="答案会显示在这里" readonly />
-    </section> -->
-    原来的成功被我写炸了，修复中。
+        <input id = "ModInverse_Ans" placeholder = "答案会显示在这里" readonly />
+    </section>
+
+    <section class = "mb-4">
+      <span class = "flex">计算欧拉函数值</span>
+      <input id = "Phi_Num" placeholder = "输入要求值的数" />
+      <input id = "Phi_Ans" placeholder = "答案会显示在这里" readonly />
+    </section>
+
+    <section class = "mb-4">
+      <span class = "flex">计算莫比乌斯函数值</span>
+      <input id = "Mu_Num" placeholder = "输入要求值的数" />
+      <input id = "Mu_Ans" placeholder = "答案会显示在这里" readonly />
+    </section>
+
+    <section class = "mb-4">
+      <span class = "flex">判断是否为质数</span>
+      <input id = "CheckPrime_Num" placeholder = "输入要判断的数" />
+      <input id = "CheckPrime_Ans" placeholder = "答案会显示在这里" readonly />
+    </section>
+    
+    <section class = "mb-4">
+      <span class = "flex">求质因数个数</span>
+      <input id = "Prime_Num" placeholder = "输入要求值的数" />
+      <input id = "Prime_Ans" placeholder = "答案会显示在这里" readonly />
+    </section>
+    
+    <section class = "mb-4">
+      <span class = "flex">求因数个数</span>
+      <input id = "Divisor_Num" placeholder = "输入要求值的数" />
+      <input id = "Divisor_Ans" placeholder = "答案会显示在这里" readonly />
+    </section>
   </MainCard>
 </BaseLayout>
 
 <script>
-  // 逆元，Phi,Mu，质数判断，质因数个数计算，因数个数计算
-  function getInv(num: number,mod: number): number
+  import {evaluate} from "mathjs"
+  const NUMBER_LIMIT = Math.pow(2,64);
+  function getInv(num: number,mod: number): any
   {
     let x: number = 1,y: number = 0;
     function exgcd(a: number,b: number): number
@@ -41,9 +71,8 @@ import MainCard from "@/components/MainCard.astro";
       return d;
     }
     let res = exgcd(num,mod);
-    return ((res == 1) ? (x + mod) % mod : NaN);
+    return ((res == 1) ? ((x + mod) % mod) : "没有逆元");
   }
-
   function getPhi(x: number): number
   {
     let res = x;
@@ -60,7 +89,6 @@ import MainCard from "@/components/MainCard.astro";
       res = res / x * (x - 1);
     return res;
   }
-
   function getMu(x: number): number
   {
     let cnt = 0;
@@ -69,7 +97,7 @@ import MainCard from "@/components/MainCard.astro";
       if(x % i == 0)
       {
         cnt++;
-        x %= i;
+        x /= i;
         if(x % i == 0)
           return 0;
       }
@@ -80,18 +108,92 @@ import MainCard from "@/components/MainCard.astro";
       return 1;
     return (cnt & 1) ? -1 : 1;
   }
-  
-  function isPrime(x: number): boolean
+  function isPrime(x: number): string
   {
     if(x < 2)
-      return false;
+      return "不是";
     for(let i = 2;i * i <= x;i++)
     {
       if(x % i == 0)
-        return false;
+        return "不是";
     }
-    return true;
+    return "是";
+  }
+  function primeCount(x: number): number
+  {
+    let res: number = 0;
+    for(let d = 2;d * d <= x;d++)
+    {
+      if(x % d == 0)
+      {
+        res++;
+        while(x % d == 0)
+          x /= d;
+      }
+    }
+    if(x > 1)
+      res++;
+    return res;
+  }
+  function divisorCount(x: number): number
+  {
+    let res: number = 0;
+    for(let d = 1;d * d <= x;d++)
+    {
+      if(x % d == 0)
+        res += 1 + Number(d * d != x);
+    }
+    return res;
   }
 
-  
+  document.addEventListener("astro:page-load",() => {
+    function commonTemplate(InputID: string,OutputID: string,Process: Function): void
+    {
+      let Input = document.getElementById(InputID),Output = document.getElementById(OutputID);
+      Input!.addEventListener("keypress",(event) => {
+        if(event.key == "Enter")
+        {
+          if(Input!.value != "")
+          {
+            try
+            {
+              let value = evaluate(Input!.value);
+              Output!.value = ((value <= NUMBER_LIMIT) ? Process(value) : "太大了");
+            }
+            catch (error)
+            {Output!.value = "发生错误";}
+          }
+        }
+        else
+          Output!.value = "";
+      });
+    }
+    commonTemplate("Phi_Num","Phi_Ans",getPhi);
+    commonTemplate("Mu_Num","Mu_Ans",getMu);
+    commonTemplate("CheckPrime_Num","CheckPrime_Ans",isPrime);
+    commonTemplate("Prime_Num","Prime_Ans",primeCount);
+    commonTemplate("Divisor_Num","Divisor_Ans",divisorCount);
+
+    let NumInput = document.getElementById("ModInverse_Num"),ModInput = document.getElementById("ModInverse_Mod"),Output = document.getElementById("ModInverse_Ans");
+    function InverseFunction(event): void
+    {
+      if(event.key == "Enter")
+      {
+        if(NumInput.value != "" && ModInput.value != "")
+        {
+          try
+          {
+            let value = evaluate(NumInput!.value),mod = evaluate(ModInput!.value);
+            console.log(value,mod);
+            Output!.value = ((value <= NUMBER_LIMIT) ? getInv(value,mod) : "太大了");
+          }
+          catch (error)
+          {Output!.value = "发生错误";}
+        }
+      }
+      else
+        Output!.value = "";
+    }
+    NumInput.addEventListener("keypress",InverseFunction),ModInput.addEventListener("keypress",InverseFunction);
+  });
 </script>
