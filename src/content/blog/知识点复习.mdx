@@ -1,0 +1,109 @@
+---
+title: 知识点复习
+description: CSP J/S & NOIP
+pubDate: 2025-10-24
+categories:
+    - 算法学习笔记
+tags:
+    - OI
+---
+
+import Error from "../../components/mdx/Error.astro";
+import Warning from "../../components/mdx/Warning.astro";
+import Success from "../../components/mdx/Success.astro";
+import Collapse from "../../components/mdx/Collapse.astro"
+
+因为在做题的时候发现有些知识点连板子都不会敲了就整理了个这个。
+
+```Error``` 表示重要的没干，```Warning``` 表示不那么重要的没干。
+
+做完的就把 ```Error``` 改成 ```Success```，下面接个板子和不熟的地方。
+
+除了下面的还有思维，下面的数据结构与图论结构等还有（优化）DP。
+
+## 基础算法
+
+<Error>分治：普通分治，猫树分治，CDQ分治</Error>
+
+## 图论
+
+<Error>Tarjan：强连通分量，点双连通分量 & 割点，边双连通分量 & 割边，圆方树</Error>
+
+<Error>点分治</Error>
+
+<Error>网络流</Error>
+
+<Error>最小生成树：魔改的 Kruskal,Prim,Boruvka</Error>
+
+<Error>最短路：SPFA（DFS 实现与给 SSP 的实现），同余最短路（转圈与同余背包）</Error>
+
+<Error>各种优化建图</Error>
+
+<Error>启发式合并，各种树链剖分优化 DP</Error>
+
+<Error>基环树</Error>
+
+## 数据结构
+
+### 基础数据结构
+
+<Error>链表的各种奇技淫巧</Error>
+
+<Error>单调队列，单调栈</Error>
+
+<Error>lxl ST表</Error>
+
+
+### 线段树
+
+<Error>李超线段树，吉司机线段树，猫树</Error>
+
+<Error>树套树</Error>
+
+<Error>线段树合并 & 优化 DP（类似 Minimax）</Error>
+
+<Error>线段树二分，主席树与其各种操作</Error>
+
+### 树状数组
+
+<Error>树状数组二分</Error>
+
+### BST & 平衡树
+
+> 你不要写你那「CENSORED」的平衡树了
+
+<Warning>FHQ Treap（$\Omicron(n)$ 建树）</Warning>
+
+<Error>笛卡尔树</Error>
+
+### 根号一家子
+
+<Success>序列分块</Success>
+
+<Warning>各种莫队</Warning>
+
+## DP
+
+> 最优子结构 无后效性 子问题重叠
+
+> 一般 DP 本质是 DFA，从决策的角度思考转移
+
+> 别慌
+
+<Error>数位 DP 与其扩展</Error>
+
+<Error>换根 DP</Error>
+
+<Warning>DDP</Warning>
+
+### 背包 DP
+
+> 等价于卷积 ：$(\min,+) / (+,\times)$
+
+<Error>树上背包</Error>
+
+<Error>带统计方案的背包</Error>
+
+### DP 优化
+
+> 注意观察性质，一般从区间转移考虑线段树，最优化 DP 转移式子与 $i,j$ 同时相关考虑斜率优化，否则考虑单调队列
