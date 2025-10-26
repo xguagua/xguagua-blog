@@ -149,8 +149,8 @@ import MainCard from "@/components/MainCard.astro";
   document.addEventListener("astro:page-load",() => {
     function commonTemplate(InputID: string,OutputID: string,Process: Function): void
     {
-      let Input = document.getElementById(InputID),Output = document.getElementById(OutputID);
-      Input!.addEventListener("keypress",(event) => {
+      let Input = document.getElementById(InputID) as HTMLInputElement,Output = document.getElementById(OutputID) as HTMLInputElement;
+      Input!.addEventListener("keypress",(event: KeyboardEvent) => {
         if(event.key == "Enter")
         {
           if(Input!.value != "")
@@ -174,12 +174,12 @@ import MainCard from "@/components/MainCard.astro";
     commonTemplate("Prime_Num","Prime_Ans",primeCount);
     commonTemplate("Divisor_Num","Divisor_Ans",divisorCount);
 
-    let NumInput = document.getElementById("ModInverse_Num"),ModInput = document.getElementById("ModInverse_Mod"),Output = document.getElementById("ModInverse_Ans");
-    function InverseFunction(event): void
+    let NumInput = document.getElementById("ModInverse_Num") as HTMLInputElement,ModInput = document.getElementById("ModInverse_Mod") as HTMLInputElement,Output = document.getElementById("ModInverse_Ans") as HTMLInputElement;
+    function InverseFunction(event: KeyboardEvent): void
     {
       if(event.key == "Enter")
       {
-        if(NumInput.value != "" && ModInput.value != "")
+        if(NumInput!.value != "" && ModInput!.value != "")
         {
           try
           {
@@ -194,6 +194,6 @@ import MainCard from "@/components/MainCard.astro";
       else
         Output!.value = "";
     }
-    NumInput.addEventListener("keypress",InverseFunction),ModInput.addEventListener("keypress",InverseFunction);
+    NumInput!.addEventListener("keypress",InverseFunction),ModInput!.addEventListener("keypress",InverseFunction);
   });
 </script>
