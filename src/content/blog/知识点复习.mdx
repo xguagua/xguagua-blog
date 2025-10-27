@@ -21,6 +21,12 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 除了下面的还有思维，下面的数据结构与图论结构等还有（优化）DP。
 
+## 基本能力
+
+<Error>中大型模拟</Error>
+
+<Error>打表、猜结论</Error>
+
 ## 基础算法
 
 <Error>分治：普通分治，猫树分治，CDQ分治</Error>
@@ -45,6 +51,12 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 ## 数据结构
 
+<Error>01-Trie 的各种操作与可持久化</Error>
+
+<Error>线性基</Error>
+
+<Error>可并堆</Error>
+
 ### 基础数据结构
 
 <Error>链表的各种奇技淫巧</Error>
@@ -53,12 +65,17 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 <Error>lxl ST表</Error>
 
-
 ### 线段树
 
 <Error>李超线段树，吉司机线段树，猫树</Error>
 
-<Error>树套树</Error>
+<Success>树套树</Success>
+
+<Collapse title = "总结">
+
+没什么说的，暴力战斗爽，注意卡常。
+
+</Collapse>
 
 <Error>线段树合并 & 优化 DP（类似 Minimax）</Error>
 
@@ -72,13 +89,37 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 > 你不要写你那「CENSORED」的平衡树了
 
-<Warning>FHQ Treap（$\Omicron(n)$ 建树）</Warning>
+<Success>FHQ Treap（$\Omicron(n)$ 建树）</Success>
 
-<Error>笛卡尔树</Error>
+<Collapse title = "总结">
+
+会写板子就行，$\Omicron(n)$ 建树可以参考笛卡尔树或者线段树，线段树的好写一点。
+
+</Collapse>
+
+<Success>笛卡尔树</Success>
+
+<Collapse title = "总结">
+
+感觉就是给单调栈附加了位置信息与树形结构，主要就是要会 $\Omicron(n)$ 建树。
+
+$\Omicron(n)$ 建树的重点就是记住用单调栈去维护右链，然后用笛卡尔树的定义来推。
+
+在最值上有些用，比如区间 $[l,r]$ 的最值就是笛卡尔树上 $l,r$ 的 LCA。
+
+</Collapse>
 
 ### 根号一家子
 
-<Success>序列分块</Success>
+<Success>序列分块、根号分治</Success>
+
+<Collapse title = "总结">
+
+这个主要就是看 $\log$ 类结构是不是维护不了，然后就看分块后能不能做到一个可接受的复杂度，以及整块信息能不能很好的下放与维护。
+
+本质上就是为了平衡复杂度而生的东西。
+
+</Collapse>
 
 <Warning>各种莫队</Warning>
 
@@ -96,6 +137,8 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 <Warning>DDP</Warning>
 
+<Warning>DP 套 DP</Warning>
+
 ### 背包 DP
 
 > 等价于卷积 ：$(\min,+) / (+,\times)$
@@ -107,3 +150,29 @@ import Collapse from "../../components/mdx/Collapse.astro"
 ### DP 优化
 
 > 注意观察性质，一般从区间转移考虑线段树，最优化 DP 转移式子与 $i,j$ 同时相关考虑斜率优化，否则考虑单调队列
+
+<Error>倍增优化 DP</Error>
+
+<Error>单调队列优化 DP</Error>
+
+<Success>斜率优化 DP（并入李超线段树）</Success>
+
+## 字符串
+
+<Error>KMP</Error>
+
+<Error>AC 自动机与 ACAM DP</Error>
+
+<Error>Manacher</Error>
+
+<Error>子序列自动机与应用</Error>
+
+## 数学
+
+<Warning>卡特兰数</Warning>
+
+<Warning>普通生成函数与基础多项式算法（FFT、NTT、多项式求逆等）</Warning>
+
+<Error>莫比乌斯反演与二项式反演</Error>
+
+<Error>高斯消元法</Error>
