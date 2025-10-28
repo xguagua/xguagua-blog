@@ -51,11 +51,33 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 ## 数据结构
 
-<Error>01-Trie 的各种操作与可持久化</Error>
+<Success>01-Trie 的各种操作与可持久化</Success>
+
+<Collapse title = "总结">
+
+记住维护异或极值建高位 Trie，就是将一个二进制数从高到低视作一个字符串。
+
+维护异或和建低位 Trie，这样就能理解为什么要那样 ```pushup``` 了。
+
+合并就是给每个节点的所有信息合并起来。
+
+可持久化参考线段树。
+
+</Collapse>
 
 <Error>线性基</Error>
 
-<Error>可并堆</Error>
+<Success>可并堆</Success>
+
+<Collapse title = "总结">
+
+应该考不到，纯堆需要合并就用 ```__gnu_pbds::priority_queue```。
+
+然后会了板子加上会打 ```lazytag``` 就行。
+
+记得找根节点要用并查集不然容易被卡。
+
+</Collapse>
 
 ### 基础数据结构
 
@@ -79,7 +101,15 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 <Error>线段树合并 & 优化 DP（类似 Minimax）</Error>
 
-<Error>线段树二分，主席树与其各种操作</Error>
+<Success>线段树二分，主席树与其各种操作</Success>
+
+<Collapse title = "总结">
+
+这种东西还是因题而异吧，知道怎么维护就行。
+
+主席数就记住一般是维护前缀线段树的信息的。
+
+</Collapse>
 
 ### 树状数组
 
@@ -169,10 +199,20 @@ $\Omicron(n)$ 建树的重点就是记住用单调栈去维护右链，然后用
 
 ## 数学
 
-<Warning>卡特兰数</Warning>
+<Success>卡特兰数</Success>
+
+<Collapse title = "总结">
+
+记住那些模型和递推式，以及前几项是什么就行。
+
+</Collapse>
 
 <Warning>普通生成函数与基础多项式算法（FFT、NTT、多项式求逆等）</Warning>
 
 <Error>莫比乌斯反演与二项式反演</Error>
 
 <Error>高斯消元法</Error>
+
+<Error>欧拉函数等</Error>
+
+<Error>线性筛，同余</Error>
