@@ -11,9 +11,9 @@ tags:
 
 import Collapse from "../../components/mdx/Collapse.astro";
 
-## 0. 前置知识
+### 0. 前置知识
 
-### 数论分块
+#### 数论分块
 
 ~~我绝对不会说是我发现我没写数论分块~~
 
@@ -58,11 +58,11 @@ $$
 综上，$\lfloor \frac{n}{d} \rfloor$ 的个数是 $\Omicron(\sqrt{n})$ 的。
 </Collapse>
 
-#### 高维的情况
+##### 高维的情况
 
 即求 $\sum _ {d = 1} ^ n f(\lfloor \frac{n}{d} \rfloor) g(\lfloor \frac{m}{d} \rfloor)$ 的值，则我们右端点就应该是最靠近左端点的那个，即 $r = \min \{ \lfloor \frac{n}{\lfloor \frac{n}{l} \rfloor} \rfloor,\lfloor \frac{m}{\lfloor \frac{m}{l} \rfloor} \rfloor \}$。
 
-## 1. 莫比乌斯函数
+### 1. 莫比乌斯函数
 
 我们定义莫比乌斯函数如下： $\mu(x) = \begin{cases} 1,x = 1 \\ 0,d ^ 2 \mid x \\ (-1) ^ k,k \text{ 表示 } x \text{ 的不同质因子个数} \end{cases}$
 
@@ -101,7 +101,7 @@ inline void Sieve(int n)
 
 有了这一条结论，我们就能解决一些之前解决不了的问题。
 
-### [Eg. 1 ZAP-Queries](https://www.luogu.com.cn/problem/P3455)
+#### [Eg. 1 ZAP-Queries](https://www.luogu.com.cn/problem/P3455)
 
 注：下面写的 $n,m$ 对应原题目中的 $a,b$，且默认 $n \le m$。
 
@@ -113,7 +113,7 @@ inline void Sieve(int n)
 
 这个时候我们就可以直接数论分块来求出这个式子的值了。
 
-## 2. 莫比乌斯反演
+### 2. 莫比乌斯反演
 
 其实就是一种另类的拿来去重的方法。
 
@@ -132,21 +132,21 @@ inline void Sieve(int n)
 
 反演结论： $g(n) = \sum \limits _ {d \mid n} f(d) \Leftrightarrow f(n) = \sum \limits _ {d \mid n} g(d) \mu(\frac{n}{d})$。
 
-## 3. Tricks
+### 3. Tricks
 
 其实莫比乌斯反演不怎么多，多的还是莫比乌斯函数的应用。
 
-### (1) 改变枚举对象
+#### (1) 改变枚举对象
 
 像上面的那道例题一样，我们在不好满足 $[\gcd(i,j) = d]$ 时，可以强制让 $i,j$ 满足 $d \mid i \wedge d \mid j$，也就是直接枚举 $di,dj$
 
-### (2) 先枚举再判断
+#### (2) 先枚举再判断
 
 还是上面那道例题，我们因为不好处理 $x \mid \gcd(i,j)$，所以我们先枚举 $x$，然后再让 $i,j$ 满足 $x \mid i \wedge x \mid j$。
 
 类似的，我们可以用这种方法解决 $\gcd$ 在分母的情况。
 
-#### [Eg. 2 Crash的数字表格](https://www.luogu.com.cn/problem/P1829)
+##### [Eg. 2 Crash的数字表格](https://www.luogu.com.cn/problem/P1829)
 
 默认 $n \le m$。
 
@@ -156,17 +156,17 @@ inline void Sieve(int n)
 
 莫比乌斯函数展开，得 $\sum \limits _ {d = 1} ^ {n} d \sum \limits _ {x = 1} ^ {\lfloor \frac{n}{d} \rfloor} \mu (x)x ^ 2 (\sum \limits _ {i = 1} ^ {\lfloor \frac{n}{dx} \rfloor} i) (\sum \limits _ {j = 1} ^ {\lfloor \frac{m}{dx} \rfloor} j)$，筛出 $\mu(x) x ^ 2$ 后就可以数论分块了。
 
-### (3) 从函数性质入手
+#### (3) 从函数性质入手
 
 比如 [DZY loves math VIII](https://www.luogu.com.cn/problem/T620314)，我们发现，若 $\gcd(i,j) \neq 1$，那一定会有平方因子，没有贡献。
 
-### (4) 直接枚举积
+#### (4) 直接枚举积
 
 ~~原谅我跟没有一样的语文~~
 
 根据我们上面的经验，最后可能会是一个包含 $\lfloor \frac{n}{dx} \rfloor$ 的式子，而在有些情况这个很不好处理，这个时候，我们就可以令 $T = dx$，然后枚举 $T$。
 
-#### [Eg. 3 数字表格](https://www.luogu.com.cn/problem/P3704)
+##### [Eg. 3 数字表格](https://www.luogu.com.cn/problem/P3704)
 
 同样默认 $n \le m$。
 
@@ -176,6 +176,6 @@ inline void Sieve(int n)
 
 这个时候，我们设 $T = dx$，并且直接枚举 $T$，则原式就转化为 $\prod \limits _ {T = 1} ^ n (\prod \limits _ {d \mid T} f _ d ^ {\mu (\frac{T}{d})}) ^ {\lfloor \frac{n}{T} \rfloor \lfloor \frac{m}{T} \rfloor}$，记 $F(n) = \prod \limits _ {d \mid n} f _ d ^ {\mu (\frac{n}{d})}$，枚举因子再枚举倍数就在 $\Omicron(n \ln n)$ 的复杂度内算出每一个 $F(n)$ 的值，然后就能数论分块了。
 
-## 4. 总结
+### 4. 总结
 
 我觉得莫比乌斯反演的题都挺 Tricky 的，反正多练多见就行了。

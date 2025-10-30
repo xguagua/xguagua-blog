@@ -13,7 +13,7 @@ tags:
 
 import Collapse from "../../components/mdx/Collapse.astro";
 
-# 0.用处
+### 0.用处
 
 用来将多项式乘法，也就是卷积，从 $\Omicron(n ^ 2)$ 优化到 $\Omicron(n \log n)$。
 
@@ -39,11 +39,11 @@ $$
 傅里叶变换有个性质：$\mathcal{F}(f(x) \ast g(x)) = \mathcal{F}(f(x)) \ast \mathcal{F}(g(x)) $，所以可以用它来优化。
 
 
-# 1.前置知识
+### 1.前置知识
 
-### 复数
+#### 复数
 
-#### 定义 & 运算
+##### 定义 & 运算
 
 形如 $z = a + bi$ 的数为复数，$a = \Re z$，为实部，$b = \Im z$，为虚部，$i$ 为虚数单位，$i ^ 2 = -1$。复数集为 $\Complex$，加减法就是实部虚部对应相加/减。
 
@@ -64,7 +64,7 @@ struct Complex
 };
 ```
 
-#### 单位根
+##### 单位根
 
 满足 $\omega ^ n = 1$ 的复数 $\omega$ 称为 $n$ 次单位根。
 
@@ -76,13 +76,13 @@ struct Complex
 2. $\omega _ n ^ k = -\omega _ {n} ^ {k + \frac{n}{2}}$
 3. $\omega _ n ^ 0 = \omega _ n ^ n = 1$
 
-# 2. 正文
+### 2. 正文
 
-## DFT
+#### DFT
 
 其实就是点值表示法中，$\forall i,x _ i = \omega _ n ^ i$。
 
-## FFT
+#### FFT
 
 在 DFT 的基础上，用计算机的办法优化。
 
@@ -96,7 +96,7 @@ struct Complex
 
 所以，可以递归求解，当 $n = 1$ 时结束。
 
-## IFFT
+#### IFFT
 
 就是上边的逆变换。具体操作就是带入的单位根变为 $\omega _ n ^ {-k}$，即原单位根的倒数，然后再做一次 FFT，最后答案要除以 $n$。[为什么是这样？](https://blog.csdn.net/Flag_z/article/details/99163939)
 

@@ -19,7 +19,7 @@ import Collapse from "../../components/mdx/Collapse.astro";
 
 ## 树相关
 
-本质都是对某个节点按某种规则分出重儿子
+本质都是对某个结点按某种规则分出重儿子
 
 ### 重链剖分 & DSU On Tree
 
@@ -31,7 +31,7 @@ import Collapse from "../../components/mdx/Collapse.astro";
 
 #### DSU On Tree（树上启发式合并）
 
-每个节点的轻子树的大小和是 $\Omicron(n \log n)$ 的，所以对于某些和子树大小相关的问题，可以考虑继承重儿子的信息后加上自己的，随后合并轻儿子。
+每个结点的轻子树的大小和是 $\Omicron(n \log n)$ 的，所以对于某些和子树大小相关的问题，可以考虑继承重儿子的信息后加上自己的，随后合并轻儿子。
 
 实现上可以考虑开一个内存池，然后 DP 数组保存指针。
 
@@ -182,7 +182,7 @@ inline void Pmodify(int u,int w)
 
 ### 长链剖分
 
-重儿子是到叶子节点的路径最长的儿子，性质是任意一条边上有 $\Omicron(\sqrt{n})$ 条轻边。
+重儿子是到叶子结点的路径最长的儿子，性质是任意一条边上有 $\Omicron(\sqrt{n})$ 条轻边。
 
 应用没有重剖多，有两个应用：求 $k$ 级祖先和优化 DP。
 

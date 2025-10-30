@@ -33,21 +33,69 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 ## 图论
 
-<Error>Tarjan：强连通分量，点双连通分量 & 割点，边双连通分量 & 割边，圆方树</Error>
+<Success>Tarjan：强连通分量，点双连通分量 & 割点，边双连通分量 & 割边，圆方树</Success>
 
-<Error>点分治</Error>
+<Collapse title = "总结">
 
-<Error>网络流</Error>
+这个东西就是把一般图转为 DAG / 树，重点还是处理树上问题或者 DAG 上问题。
 
-<Error>最小生成树：魔改的 Kruskal,Prim,Boruvka</Error>
+圆方树就是将一般图转为树，然后就能套一堆恶心的东西了，应该不会考吧。
 
-<Error>最短路：SPFA（DFS 实现与给 SSP 的实现），同余最短路（转圈与同余背包）</Error>
+</Collapse>
+
+<Success>点分治</Success>
+
+<Collapse title = "总结">
+
+看到树上路径问题可以往点分治考虑。
+
+记得怎么划分就行，相信你的 DS 能力。
+
+记得卡点常，常数比较大。
+
+</Collapse>
+
+<Success>基环树</Success>
+
+<Collapse title = "总结">
+
+可以考虑断环成链，也可以考虑分别计算后合并。
+
+如果出 DS 类就分别考虑环和树，实在不行当成仙人掌做圆方树。
+
+</Collapse>
+
+<Success>网络流</Success>
+
+<Collapse title = "总结">
+
+关键是建图，建完图都好说。
+
+有对点的限制直接拆点，如果有做过的模型比如棋盘最大值和 DAG 最小路径覆盖就直接套。
+
+</Collapse>
+
+<Success>最小生成树：魔改的 Kruskal,Prim,Boruvka</Success>
+
+<Collapse title = "总结">
+
+前两个不好变式，难点就是 Boruvka 怎么快速维护最小边。
+
+</Collapse>
+
+<Error>最短路：同余最短路（转圈与同余背包）</Error>
+
+<Collapse title = "总结">
+
+只求最短路不到万不得已不写 SPFA，必须写就加上优化。
+
+同余最短路不会转圈也不用勉强，余数记得取几个里面最小的就行。
+
+</Collapse>
 
 <Error>各种优化建图</Error>
 
 <Error>启发式合并，各种树链剖分优化 DP</Error>
-
-<Error>基环树</Error>
 
 ## 数据结构
 
@@ -59,7 +107,7 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 维护异或和建低位 Trie，这样就能理解为什么要那样 ```pushup``` 了。
 
-合并就是给每个节点的所有信息合并起来。
+合并就是给每个结点的所有信息合并起来。
 
 可持久化参考线段树。
 
@@ -75,7 +123,7 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 然后会了板子加上会打 ```lazytag``` 就行。
 
-记得找根节点要用并查集不然容易被卡。
+记得找根结点要用并查集不然容易被卡。
 
 </Collapse>
 
@@ -89,8 +137,6 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 ### 线段树
 
-<Error>李超线段树，吉司机线段树，猫树</Error>
-
 <Success>树套树</Success>
 
 <Collapse title = "总结">
@@ -99,7 +145,15 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 </Collapse>
 
-<Error>线段树合并 & 优化 DP（类似 Minimax）</Error>
+<Success>线段树合并 & 优化 DP（类似 Minimax）</Success>
+
+<Collapse title = "总结">
+
+在叶子结点合并信息，可以直接合并的也可以直接算。
+
+优化 DP 的特征就是树上需要多次合并，并且每个结点的是一个数组，可能和前缀这些有关。
+
+</Collapse>
 
 <Success>线段树二分，主席树与其各种操作</Success>
 
@@ -107,7 +161,7 @@ import Collapse from "../../components/mdx/Collapse.astro"
 
 这种东西还是因题而异吧，知道怎么维护就行。
 
-主席数就记住一般是维护前缀线段树的信息的。
+主席树就记住一般是维护前缀线段树的信息的。
 
 </Collapse>
 
@@ -185,7 +239,7 @@ $\Omicron(n)$ 建树的重点就是记住用单调栈去维护右链，然后用
 
 <Error>单调队列优化 DP</Error>
 
-<Success>斜率优化 DP（并入李超线段树）</Success>
+<Error>斜率优化 DP</Error>
 
 ## 字符串
 
@@ -207,7 +261,7 @@ $\Omicron(n)$ 建树的重点就是记住用单调栈去维护右链，然后用
 
 </Collapse>
 
-<Warning>普通生成函数与基础多项式算法（FFT、NTT、多项式求逆等）</Warning>
+<Error>分拆数</Error>
 
 <Error>莫比乌斯反演与二项式反演</Error>
 
