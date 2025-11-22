@@ -10,7 +10,15 @@ tags:
     - OI
 ---
 
-### 0. 卡特兰数
+主要还是组合数学之类的，数论考的比较少写的也比较少。
+
+### 0. 排列组合
+
+定义 $A _ {m} ^ n$ 表示从 $m$ 个物品中有序地取 $n$ 个，发现第 $i$ 次有 $m - i + 1$ 种选择，则 $A _ {m} ^ n = \prod \limits _ {i = 1} ^ n (m - i + 1) = \frac{m!}{(m - n)!}$；定义 $C _ m ^ n$ 表示从 $m$ 个物品中无序地取 $n$ 个，与上面的区别是每个互不区分，所以有 $C _ m ^ n = \frac{A _ m ^ n}{n!} = \frac{m!}{n!(m - n)!}$。
+
+还有就是两个原理，一个问题可以被分成几个互相独立的子问题，则问题的答案是所有子问题的答案之和，称为加法原理；如果这几个子问题不独立，则答案为几个子问题的答案之积，称为乘法原理。
+
+#### 卡特兰数
 
 问就是考到了不会。
 
@@ -31,3 +39,29 @@ C _ {n} = \frac{1}{n + 1}C _ {2n} ^ n = \frac{(2n)!}{n!(n + 1)!} \\
 C _ {n} = C _ {2n} ^ n - C _ {2n} ^ {n + 1} \\
 C _ {n} = \frac{4n - 2}{n + 1} C _ {n - 1}
 $$
+
+### 1. 欧拉函数
+
+定义为 $\varphi(x) = \sum \limits _ {i = 1} ^ {x} [\gcd(i,x) = 1]$。是个积性函数。
+
+对于单个函数的计算可以用 $\varphi(n) = n \prod \limits _ {i = 1} ^ k \frac{p _ i - 1}{p _ i}$ 来算，其中 $n = \prod \limits _ {i = 1} ^ k {p _ i} ^ {a _ i}$。多个的计算可以直接线性筛，显然有 $\varphi(p) = p - 1,p \in \text{Primes}$，整除那里的特判是 $\varphi(i \times p) = \varphi(i) \times p$，感性理解一下就是因为乘的是个质数所以 $\varphi(i)$ 的每一种互质情况都可以在 $\varphi(i \times p)$ 中体现，而 $[1,p - 1]$ 中每一个数都与 $p$ 互质，所以 $(i(j - 1),ij]$ 中的每个原本互质的数仍然互质，所以是 $\varphi(i \times p) = \varphi(i) \times p$。
+
+有个结论是 $n = \sum \limits _ {d \mid n} \varphi(d)$，可以拿来化简式子，狄利克雷卷积的形式是 $\mathbf{Id} = \varphi \ast \mathbf{1}$，在杜教筛里面有用。
+
+#### 欧拉定理
+
+若有 $\gcd(a,p) = 1$，则有 $a ^ {\varphi(p)} \equiv 1 \pmod p$。
+
+这个的应用范围还是有点太小了，所以有扩展欧拉定理：$a ^ p \bmod m = \begin{cases} a ^ {p \bmod \varphi(m)} & \gcd(a,m) = 1 \\ a ^ p & \gcd(a,m) \neq 1 \wedge p \lt \varphi(m) \\ a ^ {p \bmod \varphi(m) + \varphi(m)}  & \gcd(a,m) \neq 1 \wedge p \ge \varphi(m) \end{cases} \bmod m$。
+
+欧拉函数有个性质，$\varphi(\varphi(n)) \leq \frac{n}{2}$，因为对于一个奇数，一定有 $\varphi(n) = n \prod \frac{2k}{2l + 1}$，所以一定会变成偶数，而对于一个偶数，小于它的偶数一定不与它互质，这一部分有 $\frac{n}{2}$ 个，所以 $\varphi(\varphi(n))$ 一定小于等于 $\frac{n}{2}$。
+
+依据这个，我们可以解决一类模意义下的幂塔求值问题。因为模数会在 $\Omicron(\log n)$ 次操作后变为 $1$。
+
+模板可以看看 [Codeforces 906D](https://www.luogu.com.cn/problem/CF906D)。
+
+### 2. 容斥
+
+一句话就是 $ |S _ 1 \cup S _ 2 \cup \ldots \cup S _ n| = \sum \limits _ {k} (-1) ^ {k - 1} |\bigcap \limits _ {1 \le p _ 1 \lt p _ 2 \lt \ldots \lt p _ k \le n} S _ {p _ i} | $。
+
+在数数题里面拿来去重。
