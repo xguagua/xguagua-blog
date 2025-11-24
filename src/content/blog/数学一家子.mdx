@@ -65,3 +65,59 @@ $$
 一句话就是 $ |S _ 1 \cup S _ 2 \cup \ldots \cup S _ n| = \sum \limits _ {k} (-1) ^ {k - 1} |\bigcap \limits _ {1 \le p _ 1 \lt p _ 2 \lt \ldots \lt p _ k \le n} S _ {p _ i} | $。
 
 在数数题里面拿来去重。
+
+#### 二项式反演
+
+二项式定理众所周知了提一嘴就行： $(x + y) ^ n = \sum \limits _ {i = 0} ^ n C _ n ^ i x ^ i y  ^ {n - i}$
+
+由于这是总结所以我懒得写证明了，设 $f(x)$ 为至少 / 至多 $x$ 的方案数，$g(x)$ 为恰好 $x$ 的方案数：
+
+则有：
+
+- 至少的情况： $f(n) = \sum \limits _ {i = n} ^ m C _ m ^ n g(i) \Leftrightarrow g(n) = \sum \limits _ {i = n} ^ m (-1) ^ {i - k} C _ m ^ n f(i)$
+
+- 至多的情况： $f(n) = \sum \limits _ {i = 0} ^ n C _ n ^ i g(i) \Leftrightarrow g(n) = \sum \limits _ {i = 0} ^ n (-1) ^ {n - i} C _ n ^ i f(i) $
+
+### 3. 大大小小的数论定理
+
+这几个都有普通和 ex 版本。
+
+#### 辗转相除法
+
+$\gcd(x,y) = \gcd(y,x \bmod y)$，当 $y = 0$ 时为 $x$。
+
+#### exGCD
+
+用来解 $ax + by = \gcd(a,b)$ 的一组特殊解。
+
+这个可以顺手求 $\gcd(a,b)$，到最底层 $x _ n = 1,y _ n = 0$，之后每一层有 $x _ n = y _ {n + 1}，y _ n = x _ {n + 1} - \lfloor \frac{a}{b} \rfloor y _ {n + 1}$。
+
+#### CRT
+
+TBU
+
+#### exCRT
+
+TBU
+
+#### Lucas 定理
+
+适用于模数 $P$ 为质数的情况，$C _ m ^ n \bmod P = C _ {m \bmod P} ^ {n \bmod P} \times C _ {\lfloor \frac{m}{P} \rfloor} ^ {\lfloor \frac{n}{P} \rfloor}$。
+
+#### exLucas 定理
+
+适用于模数不是质数的情况，设 $P = \prod p _ i ^ {c _ i}$，我们可以求出 $C _ m ^ n$ 对 $p _ i ^ {c _ i}$ 取模的值，然后用 CRT 合并。这个直接用阶乘定义算，可能阶乘与 $p ^ c$ 不互质，推一下式子变成 $\frac{\frac{m!}{p _ x}}{\frac{n!}{p _ y} \times \frac{(m - n)!}{p _ z}} \times p ^ {x - y - z}$。
+
+然后考虑怎么算上面那几个，我们设 $f _ p(i)$ 为 $i!$ 中的 $p$ 的因数个数，有 $f _ p(i) = \lfloor \frac{i}{p} \rfloor + f _ p (\lfloor \frac{i}{p} \rfloor)$。设 $fac _ i = \frac{i!}{p ^ {f _ p(i)}}$，这个就等价于上面推的那个，然后除完之后 $i! = 1 \times 2 \times   \ldots \times (p - 1) \times (p + 1) \times \ldots \times (2p - 1) \times (2p + 1) \times \ldots$。
+
+所以，有 $fac _ i = w _ i \times fac _ {\lfloor \frac{i}{p} \rfloor}$，其中 $w _ n = \prod _ {i = 1} ^ n i ^ {[p \nmid i]}$。这个可以用 $w _ i = (w _ {p ^ c - 1} ^ {\lfloor \frac{i}{p ^ c} \rfloor}) \times w _ {n \bmod p ^ c}$ 预处理。
+
+所以最后 $C _ m ^ n \bmod p ^ c = p ^ {f _ p(m) - f _ p(n) - f _ p(m - n)} \times fac _ m \times fac _ n ^ {-1} \times fac _ {m - n} ^ {-1}$，求出每一个之后用 CRT 合并即可。
+
+#### Wilson 定理
+
+省流：对于质数 $P$ 有 $(P - 1)! \equiv -1 \pmod P$。
+
+#### exWilson
+
+TBU
