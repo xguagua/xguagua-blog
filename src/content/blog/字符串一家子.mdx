@@ -17,6 +17,32 @@ $s _ {[l,r]}$ 指 $s$ 中区间 $[l,r]$ 构成的子串。
 
 还有和哈希不要用，用一个卡一个。
 
+顺手提一个基本不会被卡的哈希，splitmix64，实现如下：
+
+```cpp
+inline uint64_t splitmix64(uint64_t x)
+{
+    x += 0x9e3779b97f4a7c15;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+    return x ^ (x >> 31);
+}
+```
+
+这几个 magic number 太难记了怎么办？随机数也可以，改了之后就是这样：
+
+```cpp
+mt19937_64 rnd(random_device{}());
+inline uint64_t splitmix64(uint64_t x)
+{
+    const static uint64_t r1 = rnd(),r2 = rnd(),r3 = rnd();
+    x += r1;
+    x = (x ^ (x >> 30)) * r2;
+    x = (x ^ (x >> 27)) * r3;
+    return x ^ (x >> 31);
+}
+```
+
 ### 1. KMP
 
 主要是用来算前缀的最长 Border，Border 指相同的前后缀，即 $s _ {[1,i]} = s _ {}$。
